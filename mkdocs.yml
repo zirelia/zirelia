@@ -4,6 +4,8 @@ site_author: "Antonio Trento (antoniotrento.net)"
 site_url: "https://zirelia.github.io/zirelia/"
 repo_url: "https://github.com/zirelia/zirelia"
 repo_name: "zirelia/zirelia"
+docs_dir: docs
+
 theme:
   name: material
   logo: assets/logo.png
@@ -11,20 +13,21 @@ theme:
   features:
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
   palette:
     - scheme: default
-      primary: custom
-      accent: custom
+      primary: deep purple
+      accent: teal
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: custom
-      accent: custom
+      primary: deep purple
+      accent: teal
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
