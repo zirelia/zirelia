@@ -1,69 +1,212 @@
 /* ============================================================
    Zirelia — Custom MkDocs Theme
-   Brand: Deep Violet #5A3FD4 + Digital Teal #20C997
+   Brand: Purple #7C3AED + Pink #EC4899 + Gold #F59E0B
+   Background: Near-black #0D0D0F (dark-only brand)
    Author: Antonio Trento (antoniotrento.net)
    License: Elastic License 2.0 (ELv2)
    ============================================================ */
 
-/* ── Primary colour overrides (Light Mode) ─────────────────── */
-[data-md-color-scheme="default"] {
-  --md-primary-fg-color:          #5A3FD4;
-  --md-primary-fg-color--light:   #7B63E0;
-  --md-primary-fg-color--dark:    #3D29A8;
-  --md-primary-bg-color:          #ffffff;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  --md-accent-fg-color:           #20C997;
-  --md-accent-fg-color--transparent: rgba(32, 201, 151, 0.12);
-}
-
-/* ── Primary colour overrides (Dark Mode) ──────────────────── */
+/* ── Dark Mode (Slate) — primary scheme ─────────────────────── */
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color:          #7B63E0;
-  --md-primary-fg-color--light:   #9A84E8;
-  --md-primary-fg-color--dark:    #5A3FD4;
-  --md-primary-bg-color:          #0D0D0D;
+  /* Primary: Brand Purple */
+  --md-primary-fg-color:          #7C3AED;
+  --md-primary-fg-color--light:   #A78BFA;
+  --md-primary-fg-color--dark:    #5B21B6;
+  --md-primary-bg-color:          #0D0D0F;
 
-  --md-accent-fg-color:           #20C997;
-  --md-accent-fg-color--transparent: rgba(32, 201, 151, 0.12);
+  /* Accent: Brand Pink */
+  --md-accent-fg-color:           #EC4899;
+  --md-accent-fg-color--transparent: rgba(236, 72, 153, 0.12);
 
-  --md-default-bg-color:          #111117;
+  /* Background surfaces */
+  --md-default-bg-color:          #0D0D0F;
+  --md-default-fg-color:          #ffffff;
+  --md-default-fg-color--light:   #A1A1AA;
+  --md-default-fg-color--lighter: #71717A;
+  --md-default-fg-color--lightest: #3F3F46;
+
+  /* Code block surfaces */
+  --md-code-bg-color:             #111117;
+  --md-code-fg-color:             #A78BFA;
+
+  /* Typeset */
+  --md-typeset-a-color:           #A78BFA;
 }
 
-/* ── Logo sizing ───────────────────────────────────────────── */
+/* ── Light Mode (Default) — force to dark as fallback ───────── */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:          #7C3AED;
+  --md-primary-fg-color--light:   #A78BFA;
+  --md-primary-fg-color--dark:    #5B21B6;
+  --md-primary-bg-color:          #0D0D0F;
+
+  --md-accent-fg-color:           #EC4899;
+  --md-accent-fg-color--transparent: rgba(236, 72, 153, 0.12);
+}
+
+/* ── Base typography ─────────────────────────────────────────── */
+body,
+.md-typeset {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+.md-header {
+  background-color: #0D0D0F;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.08);
+}
+
+/* ── Logo sizing ─────────────────────────────────────────────── */
 .md-header__button.md-logo img {
   height: 36px;
   width: auto;
 }
 
-/* ── Navigation tabs active state ──────────────────────────── */
-.md-tabs__link--active,
-.md-tabs__link:hover {
-  color: #20C997 !important;
+/* ── Navigation tabs ─────────────────────────────────────────── */
+.md-tabs {
+  background-color: #111117;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* ── Sidebar active link ────────────────────────────────────── */
+.md-tabs__link--active,
+.md-tabs__link:hover {
+  color: #A78BFA !important;
+}
+
+/* ── Sidebar + left nav ──────────────────────────────────────── */
 .md-nav__link--active {
-  color: #5A3FD4 !important;
+  color: #A78BFA !important;
   font-weight: 600;
 }
 
-/* ── Inline code blocks ─────────────────────────────────────── */
+.md-nav__link:hover {
+  color: #EC4899 !important;
+}
+
+/* ── Inline code ─────────────────────────────────────────────── */
 code {
-  background-color: rgba(90, 63, 212, 0.08);
-  color: #5A3FD4;
+  background-color: rgba(124, 58, 237, 0.12);
+  color: #A78BFA;
   border-radius: 4px;
-  padding: 1px 5px;
+  padding: 1px 6px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.85em;
+  border: 1px solid rgba(124, 58, 237, 0.2);
 }
 
-[data-md-color-scheme="slate"] code {
-  background-color: rgba(123, 99, 224, 0.15);
-  color: #9A84E8;
+/* ── Code blocks ─────────────────────────────────────────────── */
+.md-typeset pre {
+  background-color: #111117;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 12px;
 }
 
-/* ── Footer ─────────────────────────────────────────────────── */
+.md-typeset pre > code {
+  background: transparent;
+  color: #A78BFA;
+  border: none;
+  padding: 0;
+}
+
+/* ── Admonitions (Note / Warning / Tip) ─────────────────────── */
+.md-typeset .admonition,
+.md-typeset details {
+  border-left-color: #7C3AED;
+  background-color: rgba(124, 58, 237, 0.05);
+}
+
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-left-color: #F59E0B;
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.md-typeset .admonition.danger {
+  border-left-color: #EC4899;
+  background-color: rgba(236, 72, 153, 0.05);
+}
+
+/* ── Links ───────────────────────────────────────────────────── */
+.md-typeset a {
+  color: #A78BFA;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.md-typeset a:hover {
+  color: #EC4899;
+}
+
+/* ── Buttons (MkDocs Material) ───────────────────────────────── */
+.md-typeset .md-button {
+  background: linear-gradient(to right, #7C3AED, #EC4899);
+  border: none;
+  color: white;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+}
+
+.md-typeset .md-button:hover {
+  background: linear-gradient(to right, #6D28D9, #DB2777);
+  color: white;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
 .md-footer {
-  background-color: #0D0D0D;
+  background-color: #0D0D0F;
+  border-top: 1px solid rgba(124, 58, 237, 0.15);
 }
+
 .md-footer-meta {
-  background-color: #0D0D0D;
+  background-color: #0D0D0F;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0D0D0F;
+}
+::-webkit-scrollbar-thumb {
+  background: #7C3AED;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A78BFA;
+}
+
+/* ── Search ──────────────────────────────────────────────────── */
+.md-search__input {
+  background-color: #18181B;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.md-search__input:focus {
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* ── Tables ──────────────────────────────────────────────────── */
+.md-typeset table:not([class]) th {
+  background-color: rgba(124, 58, 237, 0.15);
+  color: #A78BFA;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.md-typeset table:not([class]) tr:hover td {
+  background-color: rgba(124, 58, 237, 0.05);
 }

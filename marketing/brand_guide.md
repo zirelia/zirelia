@@ -12,7 +12,7 @@ To be the go-to platform for building scalable, recognizable, and monetizable di
 - **Innovation** — Always at the forefront of AI technology
 - **Authenticity** — Coherent and credible identities
 - **Scalability** — Built to grow without limits
-- **Elegance** — Clean aesthetics and international appeal
+- **Elegance** — Dark, neon aesthetics and international appeal
 
 ---
 
@@ -55,28 +55,43 @@ To be the go-to platform for building scalable, recognizable, and monetizable di
 
 ### Color Palette
 
-| Role | Color | Hex | Usage |
+| Role | Name | Hex | Usage |
 | :--- | :--- | :--- | :--- |
-| **Primary** | Deep Violet | `#5A3FD4` | Buttons, headers, CTAs |
-| **Secondary** | Digital Teal | `#20C997` | Accents, highlights |
-| **Background** | Clean White | `#F8F9FA` | Backgrounds, cards |
-| **Dark** | Near Black | `#0D0D0D` | Body text, dark UI |
+| **Primary** | Brand Purple | `#7C3AED` | Buttons, CTAs, primary accents |
+| **Primary Light** | Purple Light | `#A78BFA` | Hover states, text accents, links |
+| **Secondary** | Brand Pink | `#EC4899` | Secondary accents, gradients, highlights |
+| **Secondary Light** | Pink Light | `#F9A8D4` | Secondary text accents |
+| **Tertiary** | Brand Gold | `#F59E0B` | Warnings, badges, special callouts |
+| **Background** | Near Black | `#0D0D0F` | Page background (dark-only) |
+| **Surface** | Dark Surface | `#18181B` | Cards, panels, nav |
+| **Muted** | Zinc | `#71717A` | Placeholder text, secondary UI |
+| **Text** | White | `#FFFFFF` | Primary text |
+
+> **Note:** Zirelia is a **dark-mode-only** brand. There is no light mode. All designs should be built on the `#0D0D0F` background.
+
+### Gradients
+
+| Name | Definition | Usage |
+| :--- | :--- | :--- |
+| **Brand Gradient** | `linear-gradient(135deg, #A78BFA 0%, #EC4899 50%, #F59E0B 100%)` | Hero text, gradient-text |
+| **CTA Gradient** | `linear-gradient(to right, #7C3AED, #EC4899)` | Buttons, CTAs |
+| **Glow Purple** | `box-shadow: 0 0 30px rgba(124,58,237,0.5), 0 0 60px rgba(124,58,237,0.2)` | Glow effect on cards/buttons |
 
 ### Typography
 
 | Role | Font | Weight |
 | :--- | :--- | :--- |
-| **Headlines** | Montserrat | Semi-Bold (600) |
-| **Body Text** | Open Sans | Regular (400) |
+| **Headlines / Display** | Space Grotesk | Bold (700) / Black (900) |
+| **Body Text** | Inter | Regular (400) / Medium (500) |
 | **Code / Docs** | JetBrains Mono | Regular (400) |
 
 ### Logo Concept
 
-- **Primary mark:** Wordmark `ZIRELIA` with a stylized `Z` or `i`
-  - The `Z` can suggest **movement**, **digital life**, **connection**
-- **Icon variant:** Abstract shape — interconnected line, triangle, or wave conveying digital identity and network
-- **Style:** Minimal, clean, works in both light and dark modes
-- **Never use:** Gradients in the primary lockup; keep it flat and bold
+- **Primary mark:** Wordmark `ZIRELIA` with gradient text (purple → pink) on dark background
+- **Icon variant:** 🧜‍♀️ mermaid emoji used as brand mascot emblem in digital contexts
+- **Style:** Dark, neon-ready, works exclusively on dark backgrounds
+- **Gradient on text:** Always applied to headlines and the wordmark — `#A78BFA → #EC4899`
+- **Never use:** On white/light backgrounds; light mode is not supported
 
 ---
 
@@ -95,15 +110,17 @@ To be the go-to platform for building scalable, recognizable, and monetizable di
 
 ### ✅ Do
 - Communicate autonomy and digital creativity
-- Use the official palette and typography
+- Use the official dark palette and typography
 - Maintain a clear, premium, modern tone
-- Position the brand as tech-forward and elegant
+- Use neon glow effects sparingly for emphasis
+- Apply the purple→pink gradient to key headline text
 
 ### ❌ Don't
+- Use light mode or white backgrounds
 - Associate the brand with "influencer girl" or superficial virality
-- Use more than 3 colors in a single composition
+- Use more than 3 accent colors in a single composition
 - Change logo or naming without a strategic reason
-- Use informal language that undermines the premium positioning
+- Use flat/unstyled text on CTAs — always gradient or glow
 
 ---
 
@@ -111,10 +128,10 @@ To be the go-to platform for building scalable, recognizable, and monetizable di
 
 | Context | Direction |
 | :--- | :--- |
-| **Website** | Clean, minimal — focus on the concept of autonomous digital identity |
+| **Website** | Dark, neon-glow — purple/pink accents on `#0D0D0F` background |
 | **Pitch / Investors** | Zirelia = "Digital Identity Infrastructure" |
 | **AI Personas (Sienna, etc.)** | Maintain visual and tone coherence with the parent brand |
-| **Docs / Tutorials** | Use primary colors, official fonts, keep simplicity and elegance |
+| **Docs / Tutorials** | Purple primary, dark slate background, Inter body font |
 | **GitHub README** | Include logo, one-line tagline, ELv2 license badge |
 
 ---
