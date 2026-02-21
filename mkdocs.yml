@@ -1,0 +1,68 @@
+site_name: Zirelia Docs
+site_description: "Documentation for the AI Virtual Influencer Engine — Zirelia."
+site_author: "Antonio Trento (antoniotrento.net)"
+site_url: "https://zirelia.github.io/zirelia/"
+repo_url: "https://github.com/zirelia/zirelia"
+repo_name: "zirelia/zirelia"
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/zirelia.css
+
+nav:
+  - Home: index.md
+  - "⚠️ Warm-Up & Anti-Ban": guides/account_warmup.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+  - Core Architecture:
+    - The Brain (Persona & Memory): core/brain.md
+    - The Imagination (Image Gen): core/imagination.md
+    - The Hands (Social Posting): core/hands.md
+    - Automation (Smart Scheduler): core/automation.md
+  - Guides:
+    - "⚠️ Account Warm-Up & Anti-Ban": guides/account_warmup.md
+    - Training LoRA (Visual Identity): guides/lora_training.md
+    - Synthetic Dataset Creation: guides/synthetic_dataset.md
+    - Setting up Twitter/X: guides/twitter_setup.md
+    - Visual Quality Control: guides/visual_quality.md
+    - Troubleshooting: troubleshooting.md
+  - API Reference:
+    - Scheduler: reference/scheduler.md
+    - Pipeline: reference/pipeline.md
+    - Persona: reference/persona.md
+  - Roadmap: roadmap.md
+  - "⚖️ Legal Disclaimer": legal.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list

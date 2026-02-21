@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: influencer_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn virtual_influencer_engine.api.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app/virtual_influencer_engine
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/influencer_db
+      - REDIS_URL=redis://redis:6379/0
+      - PYTHONPATH=/app
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      - META_APP_ID=${META_APP_ID}
+      - META_APP_SECRET=${META_APP_SECRET}
+      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
+      - FACEBOOK_PAGE_ID=${FACEBOOK_PAGE_ID}
+      - INSTAGRAM_ACCOUNT_ID=${INSTAGRAM_ACCOUNT_ID}
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+      - REPLICATE_MODEL_VERSION=${REPLICATE_MODEL_VERSION}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  # Simplified service for CLI-only bot execution (no API/worker)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app/virtual_influencer_engine
+    environment:
+      - PYTHONPATH=/app
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+      - REPLICATE_MODEL_VERSION=${REPLICATE_MODEL_VERSION}
+    command: tail -f /dev/null  # Keep container alive for manual runs
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A virtual_influencer_engine.workers.tasks worker --loglevel=info
+    volumes:
+      - .:/app/virtual_influencer_engine
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/influencer_db
+      REDIS_URL: redis://redis:6379/0
+      PYTHONPATH: /app
+    depends_on:
+      - db
+      - redis
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python virtual_influencer_engine/run_scheduler.py
+    restart: unless-stopped
+    volumes:
+      - .:/app/virtual_influencer_engine
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql://user:password@db:5432/influencer_db
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      - META_APP_ID=${META_APP_ID}
+      - META_APP_SECRET=${META_APP_SECRET}
+      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
+      - FACEBOOK_PAGE_ID=${FACEBOOK_PAGE_ID}
+      - INSTAGRAM_ACCOUNT_ID=${INSTAGRAM_ACCOUNT_ID}
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+      - REPLICATE_MODEL_VERSION=${REPLICATE_MODEL_VERSION}
+    depends_on:
+      - db
+      - redis
+
+  replier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python virtual_influencer_engine/core/engagement/replier.py
+    restart: "no"
+    profiles: ["manual"]
+    volumes:
+      - .:/app/virtual_influencer_engine
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql://user:password@db:5432/influencer_db
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+    depends_on:
+      - db
+      - redis
+
+  liker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python virtual_influencer_engine/core/engagement/liker.py
+    restart: "no"
+    profiles: ["manual"]
+    volumes:
+      - .:/app/virtual_influencer_engine
+    environment:
+      - PYTHONPATH=/app
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:

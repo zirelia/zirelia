@@ -1,0 +1,69 @@
+/* ============================================================
+   Zirelia — Custom MkDocs Theme
+   Brand: Deep Violet #5A3FD4 + Digital Teal #20C997
+   Author: Antonio Trento (antoniotrento.net)
+   License: Elastic License 2.0 (ELv2)
+   ============================================================ */
+
+/* ── Primary colour overrides (Light Mode) ─────────────────── */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:          #5A3FD4;
+  --md-primary-fg-color--light:   #7B63E0;
+  --md-primary-fg-color--dark:    #3D29A8;
+  --md-primary-bg-color:          #ffffff;
+
+  --md-accent-fg-color:           #20C997;
+  --md-accent-fg-color--transparent: rgba(32, 201, 151, 0.12);
+}
+
+/* ── Primary colour overrides (Dark Mode) ──────────────────── */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:          #7B63E0;
+  --md-primary-fg-color--light:   #9A84E8;
+  --md-primary-fg-color--dark:    #5A3FD4;
+  --md-primary-bg-color:          #0D0D0D;
+
+  --md-accent-fg-color:           #20C997;
+  --md-accent-fg-color--transparent: rgba(32, 201, 151, 0.12);
+
+  --md-default-bg-color:          #111117;
+}
+
+/* ── Logo sizing ───────────────────────────────────────────── */
+.md-header__button.md-logo img {
+  height: 36px;
+  width: auto;
+}
+
+/* ── Navigation tabs active state ──────────────────────────── */
+.md-tabs__link--active,
+.md-tabs__link:hover {
+  color: #20C997 !important;
+}
+
+/* ── Sidebar active link ────────────────────────────────────── */
+.md-nav__link--active {
+  color: #5A3FD4 !important;
+  font-weight: 600;
+}
+
+/* ── Inline code blocks ─────────────────────────────────────── */
+code {
+  background-color: rgba(90, 63, 212, 0.08);
+  color: #5A3FD4;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+[data-md-color-scheme="slate"] code {
+  background-color: rgba(123, 99, 224, 0.15);
+  color: #9A84E8;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.md-footer {
+  background-color: #0D0D0D;
+}
+.md-footer-meta {
+  background-color: #0D0D0D;
+}

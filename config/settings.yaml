@@ -1,0 +1,30 @@
+# Global Settings
+PROJECT_NAME: "Virtual Influencer Engine"
+VERSION: "1.0.0"
+
+# Database
+DATABASE_URL: "postgresql://user:password@db:5432/influencer_db"
+REDIS_URL: "redis://redis:6379/0"
+
+# AI
+OPENAI_API_KEY: "your-openai-api-key"
+ANTHROPIC_API_KEY: "your-anthropic-api-key"
+HF_TOKEN: "your-huggingface-token"
+
+# Image Generation
+SDXL_MODEL_PATH: "stabilityai/stable-diffusion-xl-base-1.0"
+LORA_PATH: "models/lora/persona.safetensors"
+CONTROLNET_MODEL_PATH: "diffusers/controlnet-canny-sdxl-1.0"
+IDENTITY_SEED: 42
+NEGATIVE_PROMPT: "blurry, low quality, deformed, ugly, bad anatomy, text, watermark"
+
+# Social Platforms
+TWITTER:
+  API_KEY: "your-twitter-api-key"
+  API_SECRET: "your-twitter-api-secret"
+  ACCESS_TOKEN: "your-twitter-access-token"
+  ACCESS_SECRET: "your-twitter-access-secret"
+
+INSTAGRAM:
+  USERNAME: "your-instagram-username"
+  PASSWORD: "your-instagram-password"

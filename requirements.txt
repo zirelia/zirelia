@@ -1,0 +1,30 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+sqlalchemy==2.0.23
+celery==5.3.6
+redis==5.0.1
+openai==1.40.0
+pydantic==2.5.2
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+psycopg2-binary==2.9.9
+requests==2.31.0
+PyYAML==6.0.1
+Pillow==10.1.0
+python-multipart==0.0.6
+# AI & Memory (pinned versions to avoid conflicts)
+langchain-core==0.2.39
+langchain-community==0.2.16
+langchain==0.2.16
+langchain-openai==0.1.23
+langgraph==0.2.20
+chromadb==0.5.5
+replicate==0.34.1
+tiktoken==0.7.0
+# Social APIs
+tweepy>=4.14.0
+facebook-sdk>=3.1.0
+# Utilities
+colorlog>=6.7.0
+mkdocs-material>=9.5.0
+pytz>=2023.3
