@@ -10,3 +10,4 @@ venv/
 *.log
 generated_images/
 influencer.db
+site/
