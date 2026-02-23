@@ -48,6 +48,7 @@ nav:
     - Automation (Smart Scheduler): core/automation.md
   - Guides:
     - "⚠️ Account Warm-Up & Anti-Ban": guides/account_warmup.md
+    - Meta API Setup (Instagram & Threads): guides/meta_setup.md
     - Training LoRA (Visual Identity): guides/lora_training.md
     - Synthetic Dataset Creation: guides/synthetic_dataset.md
     - Setting up Twitter/X: guides/twitter_setup.md
