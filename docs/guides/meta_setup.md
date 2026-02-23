@@ -5,9 +5,11 @@ This guide provides a step-by-step walkthrough on how to set up the necessary De
 > [!IMPORTANT]
 > **Prerequisites before starting:**
 > 1. A standard **Facebook account** (used to log into the Developer Portal).
-> 2. An **Instagram Professional Account** (Creator or Business).
+> 2. An **Instagram Professional Account** (Creator or Business). Both are **100% free** to switch to.
 > 3. A **Threads account** linked to the same Instagram profile.
 > 4. A **Facebook Page** linked to the Instagram account (required by the Meta API for Instagram access).
+> 
+> 💡 **Cost Note**: The Instagram and Threads APIs, as well as Developer Accounts, are **completely free** to use. Meta does not charge for API requests like Twitter does.
 
 ---
 
