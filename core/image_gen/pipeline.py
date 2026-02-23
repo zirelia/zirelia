@@ -6,9 +6,9 @@ import os
 import time
 import replicate
 from openai import OpenAI
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
-from virtual_influencer_engine.core.image_gen.critic import ImageCritic
+from config.settings import get_settings
+from core.utils.logger import logger
+from core.image_gen.critic import ImageCritic
 
 settings = get_settings()
 

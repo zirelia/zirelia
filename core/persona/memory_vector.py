@@ -7,8 +7,8 @@ from chromadb.utils import embedding_functions
 from typing import List, Dict, Any, Optional
 import time
 import os
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
+from config.settings import get_settings
+from core.utils.logger import logger
 
 settings = get_settings()
 

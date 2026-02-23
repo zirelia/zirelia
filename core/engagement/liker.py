@@ -11,7 +11,7 @@ import tweepy
 from datetime import datetime
 from dotenv import load_dotenv
 
-from virtual_influencer_engine.config.settings import get_settings
+from config.settings import get_settings
 
 # Configure Logging
 logging.basicConfig(

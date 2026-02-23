@@ -6,8 +6,8 @@
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
+from config.settings import get_settings
+from core.utils.logger import logger
 
 class ImageCritic:
     def __init__(self):

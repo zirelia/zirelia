@@ -7,7 +7,7 @@ from typing import Dict, Any
 from .manager import SocialManager
 from .meta import MetaClient
 from .twitter import TwitterClient
-from virtual_influencer_engine.core.utils.logger import logger
+from core.utils.logger import logger
 
 class TwitterManager(SocialManager):
     def __init__(self, platform_name: str, config: Dict[str, Any]):

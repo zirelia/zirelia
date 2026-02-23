@@ -5,7 +5,7 @@
 import logging
 import sys
 
-from virtual_influencer_engine.config.settings import get_settings
+from config.settings import get_settings
 
 settings = get_settings()
 

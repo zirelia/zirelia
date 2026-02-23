@@ -4,8 +4,8 @@
 
 import json
 from typing import Dict, Any
-from virtual_influencer_engine.core.content.workflow import ContentWorkflow
-from virtual_influencer_engine.core.utils.logger import logger
+from core.content.workflow import ContentWorkflow
+from core.utils.logger import logger
 
 class ContentGenerator:
     def __init__(self, persona_engine=None):

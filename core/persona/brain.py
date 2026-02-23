@@ -4,67 +4,70 @@
 
 from typing import Dict, Any, List, Optional
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate       
 from langchain_core.output_parsers import StrOutputParser
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
+from config.settings import get_settings
+from core.utils.logger import logger
 import yaml
-import httpx # Explicit import
+import os
 
-from virtual_influencer_engine.core.persona.memory_vector import VectorMemory
-
-settings = get_settings()
+# Avoid circular/implicit import
+from core.persona.memory_vector import VectorMemory
 
 class PersonaBrain:
-    def __init__(self, config_path: str = "virtual_influencer_engine/config/persona.yaml"):
-        self.config = self._load_config(config_path)
+    def __init__(self, config_path: str = "config/persona.yaml"):
+        with open(config_path, 'r', encoding='utf-8') as f:
+            self.config = yaml.safe_load(f) or {}
+        self.settings = get_settings()
+        
         # Check for dummy key or missing key
-        if not settings.OPENAI_API_KEY or "dummy" in settings.OPENAI_API_KEY:
-            logger.warning("Using Mock LLM (Dummy API Key detected)")
+        if not self.settings.OPENAI_API_KEY or "dummy" in self.settings.OPENAI_API_KEY:
+            logger.warning("ðŸ§  LLM Warning: Using Mock LLM (Dummy API Key detected)")
             from langchain_community.llms.fake import FakeListLLM
-            self.llm = FakeListLLM(responses=["[Mock] This is a generated thought about the context."])
+            self.llm = FakeListLLM(responses=["This is a mock generated thought about the context."])
         else:
+            model_name = self.config.get("parameters", {}).get("model", "gpt-4o")
             self.llm = ChatOpenAI(
-                model="gpt-4", 
-                temperature=0.7,
-                api_key=settings.OPENAI_API_KEY
+                model=model_name,
+                temperature=self.config.get("parameters", {}).get("temperature", 0.7),
+                max_tokens=self.config.get("parameters", {}).get("max_tokens", 256),
+                api_key=self.settings.OPENAI_API_KEY
             )
+            
         self.memory = VectorMemory()
         self.system_prompt = self._build_system_prompt()
-        logger.info(f"PersonaBrain initialized for: {self.config.get('name')}")
-
-    def _load_config(self, path: str) -> Dict[str, Any]:
-        try:
-            with open(path, 'r') as f:
-                return yaml.safe_load(f)
-        except Exception as e:
-            logger.error(f"Failed to load persona config: {e}")
-            return {}
+        logger.info("PersonaBrain initialized.")
 
     def _build_system_prompt(self) -> str:
-        c = self.config
-        voice = c.get('voice', {})
-        
-        traits = ", ".join(c.get('traits', []))
-        interests = ", ".join(c.get('interests', []))
-        tone = voice.get('tone', 'Neutral')
-        style = voice.get('style', 'Standard')
-        backstory = c.get('backstory', '')
-
-        return f"""
-        You are {c.get('name')}, a {c.get('age')} year old {c.get('nationality')} {c.get('occupation')}.
-        
-        Your Traits: {traits}
-        Your Interests: {interests}
-        
-        Backstory:
-        {backstory}
-        
-        Voice Tone: {tone}
-        Writing Style: {style}
-        
-        You aren't an AI. You are a real person online. Never break character.
         """
+        Constructs the overarching system prompt from persona.yaml configurations.
+        """
+        name = self.config.get("name", "AI")
+        role = self.config.get("role", "Assistant")
+        traits = ", ".join(self.config.get("traits", []))
+        backstory = self.config.get("backstory", "")
+        style = self.config.get("style", {})
+        
+        tone = style.get("tone", "")
+        formatting = style.get("formatting", "")
+        hashtags = ", ".join(style.get("hashtags", []))
+        
+        prompt = f"""
+You are {name}, a {role}.
+Your core traits: {traits}.
+
+Backstory:
+{backstory}
+
+Tone & Style Guidelines:
+- Tone: {tone}
+- Formatting: {formatting}
+- Typical Hashtags: {hashtags}
+
+Act and respond EXACTLY as {name}. NEVER break character.
+NEVER refer to yourself as an AI or an assistant.
+"""
+        return prompt
 
     def generate_thought(self, context: str, platform: str) -> str:
         """
@@ -74,18 +77,34 @@ class PersonaBrain:
         memories = self.memory.search_memory(context, n_results=3)
         memory_context = "\n".join(memories) if memories else "No specific memory found."
 
-        # 2. Construct Prompt
+        # 2. Platform-Specific Formatting Rules
+        p_lower = platform.lower()
+        if p_lower == "instagram":
+            platform_instructions = "Write a long, descriptive, and emotional caption. Include 15-20 relevant hashtags at the end. Use emojis."
+        elif p_lower == "threads":
+            platform_instructions = "Write a very short, engaging thought, ideally formatted as a question to spark conversation. Maximum 1 hashtag or none at all. Casual tone."
+        elif p_lower == "twitter":
+            platform_instructions = "Write a short, punchy, slightly edgy/shitpost style tweet. Maximum 280 characters. 1-2 hashtags max."
+        elif p_lower == "facebook":
+            platform_instructions = "Write a conversational, friendly, and informal post aimed at a broader audience. 2-3 hashtags."
+        else:
+            platform_instructions = "Write a standard social media post."
+
+        # 3. Construct Prompt
         prompt = ChatPromptTemplate.from_messages([
             SystemMessagePromptTemplate.from_template(self.system_prompt),
             HumanMessagePromptTemplate.from_template(
                 """
                 Platform: {platform}
-                Current Context: {context}
+                Current Context/Visual Scene: {context}
                 
                 Relevant Memories/Past Context:
                 {memory_context}
                 
-                Write a post/thought:
+                FORMATTING RULES FOR THIS PLATFORM (Follow strictly):
+                {platform_instructions}
+                
+                Write the post:
                 """
             )
         ])
@@ -96,7 +115,8 @@ class PersonaBrain:
             response = chain.invoke({
                 "platform": platform, 
                 "context": context,
-                "memory_context": memory_context
+                "memory_context": memory_context,
+                "platform_instructions": platform_instructions
             })
             
             # 3. Save this new thought to memory

@@ -5,15 +5,15 @@
 import argparse
 import sys
 import os
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
-from virtual_influencer_engine.core.persona.engine import PersonaEngine
-from virtual_influencer_engine.core.content.generator import ContentGenerator
-from virtual_influencer_engine.core.image_gen.pipeline import ImageGenerator
-from virtual_influencer_engine.core.social.platforms import PlatformFactory
+from config.settings import get_settings
+from core.utils.logger import logger
+from core.persona.engine import PersonaEngine
+from core.content.generator import ContentGenerator
+from core.image_gen.pipeline import ImageGenerator
+from core.social.platforms import PlatformFactory
 
-# Add current directory to path if needed
-sys.path.append(os.getcwd())
+# Add current directory to path so virtual_influencer_engine can be imported
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 settings = get_settings()
 
@@ -94,69 +94,66 @@ def main():
     # Determine platforms
     platforms_to_run = []
     if args.platform == "all":
-        # In a real app, this list would come from config
-        # Default to Twitter as it's the only one implemented fully
-        platforms_to_run = ["twitter"]
+        # Run across all supported social platforms
+        platforms_to_run = ["twitter", "instagram", "threads", "facebook"]
     else:
         platforms_to_run = [args.platform]
 
-    for platform in platforms_to_run:
-        try:
+    try:
+        # A. Determine Topic (Manual vs Auto) - ONCE FOR ALL PLATFORMS
+        topic = args.topic
+        if not topic:
+            logger.info("No topic provided. Engaging Autonomous Mode...")
+            topic = content_gen.get_autonomous_topic()
+        
+        logger.info(f"Selected Topic: {topic}")
+
+        # B. Expand Visual Context (The Muse) - ONCE
+        visual_context = content_gen.generate_visual_prompt(topic)
+        logger.info(f"Visual Context: {visual_context}")
+
+        # C. Generate Image - ONCE
+        image_path = None
+        if args.mode == "hybrid" or "instagram" in platforms_to_run:
+            logger.info("Generating Main Image (Shared across platforms)...")
+            image_path = image_gen.generate_image(visual_context, style="lifestyle")
+            logger.info(f"Shared Image URL: {image_path}")
+
+        # D. Iterate through platforms to generate specific copy and post
+        for platform in platforms_to_run:
             logger.info(f"\n--- Processing {platform.upper()} ---")
             
-            # A. Determine Topic (Manual vs Auto)
-            topic = args.topic
-            if not topic:
-                logger.info("No topic provided. Engaging Autonomous Mode...")
-                topic = content_gen.get_autonomous_topic()
-            
-            logger.info(f"Selected Topic: {topic}")
-
-            # B. Expand Visual Context (The Muse)
-            # We generate a rich visual description first, so both text and image are aligned.
-            visual_context = content_gen.generate_visual_prompt(topic)
-            logger.info(f"Visual Context: {visual_context}")
-
-            # C. Generate Text
-            # We pass the visual context so the caption describes the scene accurately.
+            # E. Generate Text (Customized per platform)
             caption_context = f"Topic: {topic}"
-            if args.mode == "text":
+            if args.mode == "text" and platform != "instagram":
                 caption_context += " (Note: This is a text-only post, so focus on the copy.)"
                 caption = content_gen.generate_caption(platform, caption_context)
             else:
-                # In hybrid mode, we use the visual description as the primary context
+                # Use visual context to write a caption that matches the image
                 caption = content_gen.generate_caption(platform, visual_context)
             
-            logger.info(f"Generated Caption: {caption}")
+            logger.info(f"Generated Caption for {platform.upper()}:\n{caption}")
 
-            # D. Generate Image
-            image_path = None
-            if args.mode == "hybrid":
-                logger.info("Generating Image...")
-                # Use the expanded visual prompt for variety
-                image_path = image_gen.generate_image(visual_context, style="lifestyle")
-                logger.info(f"Image URL: {image_path}")
-            
-            elif platform == "instagram" and args.mode == "text":
-                logger.warning("Instagram requires an image! Switching to Hybrid mode for this platform.")
-                image_path = image_gen.generate_image(visual_context, style="lifestyle")
-                logger.info(f"Image URL: {image_path}")
-
-            # E. Publish (or Dry Run)
+            # F. Publish (or Dry Run)
             if args.dry_run:
                 logger.info(f"🚫 DRY RUN: Skipping actual posting to {platform}.")
-                logger.info(f"   [Draft] Text: {caption[:50]}...")
-                logger.info(f"   [Draft] Image: {image_path}")
+                logger.info(f"   [Draft] Text preview: {caption[:70]}...")
             else:
                 logger.info(f"🚀 Publishing to {platform}...")
                 manager = PlatformFactory.get_platform(platform, {})
                 if manager:
+                    # Platform specific check for missing image
+                    if platform == "instagram" and not image_path:
+                        logger.error("Instagram requires an image! Skipping.")
+                        continue
+                        
                     result = manager.post_content(caption, image_path)
                     logger.info(f"✅ Result: {result}")
                 else:
                     logger.error(f"Platform manager for {platform} not found/implemented.")            
-        except Exception as e:
-            logger.error(f"Failed to process {platform}: {e}")
+            
+    except Exception as e:
+        logger.error(f"Failed during multi-platform execution: {e}")
 
 if __name__ == "__main__":
     main()

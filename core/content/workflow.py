@@ -5,9 +5,9 @@
 from typing import Dict, TypedDict, Annotated, List
 import operator
 from langgraph.graph import StateGraph, END
-from virtual_influencer_engine.core.persona.brain import PersonaBrain
-from virtual_influencer_engine.core.safety.manager import SafetyManager
-from virtual_influencer_engine.core.utils.logger import logger
+from core.persona.brain import PersonaBrain
+from core.safety.manager import SafetyManager
+from core.utils.logger import logger
 
 # Define State
 class AgentState(TypedDict):

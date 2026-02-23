@@ -3,8 +3,8 @@
 # License: Elastic License 2.0 (ELv2) - https://www.elastic.co/licensing/elastic-license
 
 from typing import Dict, Any, Optional
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
+from config.settings import get_settings
+from core.utils.logger import logger
 
 settings = get_settings()
 
