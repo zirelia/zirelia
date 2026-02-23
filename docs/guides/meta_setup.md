@@ -13,6 +13,25 @@ This guide provides a step-by-step walkthrough on how to set up the necessary De
 
 ---
 
+## Part 0: Account Creation Strategy (Anti-Ban)
+
+Meta's security algorithms are extremely aggressive against newly created accounts that immediately try to use APIs. **DO NOT create a "fake" Facebook profile for your AI.** You will be banned within 24 hours.
+
+Follow this exact sequence to establish trust:
+
+1. **The Email**: Use the **same email address** (e.g., Gmail) that you used for your AI's Twitter/X account. Consistency builds trust cross-platform.
+2. **Instagram & Threads**:
+   * Create the Instagram account **from a smartphone app** (not a desktop browser).
+   * Install the Threads app and log in using the newly created Instagram credentials.
+   * In the Instagram app settings, switch the account to a **Professional Account** (Creator or Business).
+3. **The Facebook Connection (CRITICAL)**:
+   * Log into your **REAL, personal Facebook account** (the one you use every day).
+   * Create a new **Facebook Page** for your AI (e.g., "Sienna Fox"). You don't need to post anything here; it acts as a legal/technical bridge.
+   * In the settings of this new Facebook Page, go to "Linked Accounts" and **connect the AI's Instagram account**.
+   * Because your real personal account has a high "Trust Score", Meta allows the Page (and its linked Instagram) to use APIs safely.
+
+---
+
 ## Part 1: Setting up the Meta App
 
 1. Go to the [Meta for Developers Portal](https://developers.facebook.com/) and log in with your Facebook account.
