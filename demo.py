@@ -8,12 +8,12 @@ import os
 # Add current directory to path
 sys.path.append(os.getcwd())
 
-from virtual_influencer_engine.config.settings import get_settings
-from virtual_influencer_engine.core.utils.logger import logger
-from virtual_influencer_engine.core.persona.engine import PersonaEngine
-from virtual_influencer_engine.core.content.generator import ContentGenerator
-from virtual_influencer_engine.core.image_gen.pipeline import ImageGenerator
-from virtual_influencer_engine.core.social.platforms import PlatformFactory
+from config.settings import get_settings
+from core.utils.logger import logger
+from core.persona.engine import PersonaEngine
+from core.content.generator import ContentGenerator
+from core.image_gen.pipeline import ImageGenerator
+from core.social.platforms import PlatformFactory
 
 # Load Settings
 settings = get_settings()
@@ -23,7 +23,7 @@ def main():
     
     # 1. Initialize Persona
     logger.info("1. Initializing Persona Engine...")
-    config_path = os.path.join(os.getcwd(), "virtual_influencer_engine/config/persona.yaml")
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config/persona.yaml")
     persona = PersonaEngine(config_path=config_path)
     logger.info(f"   Persona Loaded: {persona.get_personality_summary()}")
 

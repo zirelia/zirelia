@@ -145,26 +145,35 @@ class SmartScheduler:
         """
         Calls main.py to execute the actual posting logic.
         """
-        logger.info(f"⚡ EXECUTING SCHEDULED POST: {post['label']}")
+        logger.info(f"⚡ PREPARING SCHEDULED POST: {post['label']}")
         
-        try:
-            # Construct command
-            cmd = ["python", "virtual_influencer_engine/main.py", "--platform", "twitter"]
-            
-            if post['topic']:
-                cmd.extend(["--topic", post['topic']])
-            
-            # We call main.py as a subprocess to ensure clean state for each run
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                logger.info("✅ Post executed successfully.")
-                logger.debug(result.stdout)
-            else:
-                logger.error(f"❌ Post failed: {result.stderr}")
+        # Read active platforms from env or default to instagram
+        active_platforms_env = os.getenv("ACTIVE_PLATFORMS", "instagram,facebook")
+        active_platforms = [p.strip() for p in active_platforms_env.split(",") if p.strip()]
+
+        for platform in active_platforms:
+            logger.info(f"⚡ EXECUTING SCHEDULED POST ON: {platform.upper()}")
+            try:
+                # Construct command
+                cmd = ["python", "-u", "main.py", "--platform", platform]
                 
-        except Exception as e:
-            logger.error(f"❌ Execution error: {e}")
+                if post['topic']:
+                    cmd.extend(["--topic", post['topic']])
+                
+                # We call main.py as a subprocess to ensure clean state for each run
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    logger.info(f"✅ Post executed successfully on {platform.upper()}.")
+                    for line in result.stdout.splitlines():
+                        logger.debug(line)
+                else:
+                    logger.error(f"❌ Post failed on {platform.upper()}:")
+                    for line in result.stderr.splitlines():
+                        logger.error(line)
+                    
+            except Exception as e:
+                logger.error(f"❌ Execution error on {platform.upper()}: {e}")
 
 if __name__ == "__main__":
     # Setup basic logging for standalone run

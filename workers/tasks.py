@@ -10,12 +10,12 @@ import time
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 celery = Celery("tasks", broker=redis_url, backend=redis_url)
 
-from virtual_influencer_engine.database.db import SessionLocal
-from virtual_influencer_engine.database.models import Post, Analytics
-from virtual_influencer_engine.core.persona.engine import PersonaEngine
-from virtual_influencer_engine.core.image_gen.pipeline import ImageGenerator
-from virtual_influencer_engine.core.content.generator import ContentGenerator
-from virtual_influencer_engine.core.social.platforms import PlatformFactory
+from database.db import SessionLocal
+from database.models import Post, Analytics
+from core.persona.engine import PersonaEngine
+from core.image_gen.pipeline import ImageGenerator
+from core.content.generator import ContentGenerator
+from core.social.platforms import PlatformFactory
 
 @celery.task(name="generate_content_task")
 def generate_content_task(platform: str, topic: str):

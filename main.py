@@ -10,6 +10,9 @@ from core.utils.logger import logger
 from core.persona.engine import PersonaEngine
 from core.content.generator import ContentGenerator
 from core.image_gen.pipeline import ImageGenerator
+import os
+os.environ['POSTHOG_DISABLED'] = 'true'
+os.environ['TELEMETRY_OPT_OUT'] = 'true'
 from core.social.platforms import PlatformFactory
 
 # Add current directory to path so virtual_influencer_engine can be imported
@@ -81,14 +84,16 @@ def main():
     logger.info(f"Mode: {args.mode.upper()} | Platform: {args.platform.upper()} | Dry Run: {args.dry_run}")
 
     # Initialize Components
-    config_path = os.path.join(os.getcwd(), "virtual_influencer_engine/config/persona.yaml")
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config/persona.yaml")
     
     try:
         persona = PersonaEngine(config_path=config_path)
         content_gen = ContentGenerator(persona)
         image_gen = ImageGenerator()
     except Exception as e:
+        import traceback
         logger.error(f"Failed to initialize engine components: {e}")
+        logger.error(traceback.format_exc())
         return
 
     # Determine platforms

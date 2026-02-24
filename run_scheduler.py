@@ -3,7 +3,7 @@
 # License: Elastic License 2.0 (ELv2) - https://www.elastic.co/licensing/elastic-license
 
 
-from virtual_influencer_engine.core.automation.scheduler import SmartScheduler
+from core.automation.scheduler import SmartScheduler
 import logging
 import sys
 import os

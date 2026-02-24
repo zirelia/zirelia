@@ -95,6 +95,9 @@ class FacebookManager(MetaPlatformManager):
              self.safety_manager.record_action("facebook")
         return result
 
+    def reply_to_comment(self, comment_id: str, text: str) -> Dict[str, Any]:
+        return {"status": "skipped", "message": "Not implemented yet"}
+
     def get_metrics(self) -> Dict[str, Any]:
         return {"status": "mock"}
 

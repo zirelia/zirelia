@@ -33,38 +33,56 @@ Segui questa sequenza esatta per stabilire "fiducia" (Trust) con Meta:
 
 ---
 
-## Parte 1: Creazione della Meta App
+## Parte 1: Creazione della Meta App (Metodo "Azienda")
 
-1. Vai sul [Meta for Developers Portal](https://developers.facebook.com/) e accedi con il tuo account Facebook.
-2. Se è la prima volta, registrati come Meta Developer (è gratuito).
-3. Clicca su **My Apps** (Le mie App) in alto a destra, poi su **Create App** (Crea App).
-4. Scegli **Other** (Altro) come caso d'uso e vai avanti.
-5. Scegli **Business** come tipo di app e vai avanti.
-6. Dai un nome alla tua app (es. "Zirelia AutoPoster") e inserisci un'email di contatto. Lascia il Business Account vuoto per ora, a meno che tu non ne abbia già uno pronto. Clicca su **Create App**.
+> ⚠️ **IMPORTANTE: Ignora la Verifica dell'Azienda (Business Verification)**
+> Sulla dashboard potresti vedere un avviso che ti chiede di "Verificare l'Azienda" in quanto "Non verificata". **IGNORALO COMPLETAMENTE.** Non devi caricare documenti. Dal momento che l'app serve solo per te, può rimanere in stato "Sviluppo" o "Non verificata" per sempre.
+
+Meta cambia spesso interfaccia, nascondendo le opzioni per gli sviluppatori indipendenti. Per avere accesso a Instagram senza blocchi, segui **esattamente** questi step per forzare la creazione di un'app "Aziendale":
+
+1. Vai sul [Meta for Developers Portal](https://developers.facebook.com/) e accedi con il tuo account Facebook personale.
+2. Clicca su **My Apps** (Le mie App) in alto a destra, poi sul pulsante verde **Create App** (Crea App).
+3. Nella schermata *"Che cosa vuoi far fare alla tua app?"*, **IGNORA tutte le opzioni principali**. Scorri fino in fondo alla pagina, seleziona **Altro** (Other) e clicca su Avanti.
+4. Alla schermata *"Seleziona un tipo di app"*, scegli **Azienda** (Business) e clicca su Avanti.
+5. Dai un nome all'app (es. "Zirelia AutoPoster"). Sotto "Account Business", lascia **Nessun account selezionato**. Clicca su **Crea App**.
 
 ---
 
-## Parte 2: Configurare le API Graph di Instagram
+## Parte 2: Aggiungere i Prodotti (Instagram e Login)
 
-L'API Graph di Instagram ti permette di pubblicare Foto e Video (Reels) sul tuo account Professionale.
+Una volta creata l'App di tipo Azienda, atterrerai su una Dashboard con dei grandi riquadri chiamati "Prodotti". Devi aggiungerne due per far funzionare tutto senza errori:
 
-1. Nella Dashboard della tua App, scorri in basso fino a **Add products to your app** (Aggiungi prodotti alla tua app).
-2. Trova **Instagram Graph API** e clicca su **Set Up** (Configura).
-3. Nella barra laterale sinistra, sotto **Instagram Graph API**, clicca su **API Setup**.
-4. Vedrai un pulsante **Add Facebook Login for Business**. Cliccalo, poiché è il sistema di autenticazione che Meta usa sotto il cofano.
-5. Segui le istruzioni a schermo per aggiungere il prodotto.
-6. Ora dobbiamo generare un **Access Token** (Token di Accesso). Il modo più semplice per farlo senza programmare codice OAuth personalizzato è usare il **Graph API Explorer**:
-    * Dal menu in alto vai su **Tools > Graph API Explorer**.
-    * Nel menu a tendina "Meta App", seleziona la tua nuova app.
-    * Sotto "User or Page" (Utente o Pagina), seleziona **Get Page Access Token** (Ottieni Token di Accesso Pagina). Ti verrà chiesto di accedere e autorizzare l'app ad accedere alla tua Pagina Facebook e all'account Instagram collegato.
-    * Quando te lo chiede, assicurati di concedere questi permessi:
-        * `instagram_basic`
-        * `instagram_content_publish`
-        * `pages_show_list`
-        * `pages_read_engagement`
-    * Una volta autorizzato, vedrai un token nel campo "Access Token". **Attenzione: questo token è temporaneo e scade in 1 ora.**
+1. Scorri la pagina "Aggiungi prodotti alla tua app".
+2. Trova il riquadro **Instagram** (o *Instagram Graph API*) e clicca su **Configura** (Set Up). Il menu laterale si aggiornerà, ignoralo e torna alla Dashboard (o clicca *Aggiungi Prodotto*).
+3. Trova il riquadro **Facebook Login for Business** e clicca su **Configura**. *(Questo passaggio è FONDAMENTALE per far aprire la finestra di login successivamente, senza ricevere l'errore "Funzione non disponibile").*
 
-### Ottenere un Token a lunga scadenza (Long-Lived) per Instagram
+### 2.1 Inserire il link Privacy Obbligatorio
+Meta blocca la finestra di login se manca una URL Privacy fittizia:
+1. Dal menu a sinistra della tua App, vai su **Impostazioni (Settings) > Di base (Basic)**.
+2. Trova il campo **URL della Normativa sulla privacy** (Privacy Policy URL). Inserisci un link qualsiasi (es. `https://google.com` o il tuo GitHub). Scorri in fondo e clicca **Salva modifiche**.
+
+---
+
+## Parte 3: Generare il Token (Il Graph API Explorer)
+
+Dimentica l'interfaccia caotica dell'app e vai dritto allo strumento ufficiale per sviluppatori. Questo è l'unico modo sicuro per non impazzire:
+
+1. Apri questo link diretto: 👉 **[Graph API Explorer](https://developers.facebook.com/tools/explorer/)**
+2. Nel menu a destra "App Meta", seleziona la tua app (se non è già lì).
+3. Sotto **"Utente o Pagina"** (User or Page), clicca il menu a tendina e scegli **Ottieni token di accesso dell'utente** (Get User Access Token).
+4. Si aprirà un popup di Facebook: fai il login personale e **seleziona tutte le tue Pagine e Instagram**. Dai l'ok. Se prima non ti faceva andare avanti con "Errore", ora col link Privacy e il Facebook Login funzionerà.
+5. Sotto la voce **Autorizzazioni** (sempre a destra), usa la barra di ricerca o i menu a tendina per **aggiungere queste 5 voci**:
+    * `instagram_basic`
+    * `instagram_content_publish`
+    * `pages_show_list`
+    * `pages_read_engagement`
+    * `pages_manage_posts` (Rigorosamente necessario per pubblicare sulla Pagina FB)
+    *(Se vuoi Threads aggiungi anche `threads_basic` e `threads_content_publish`).*
+6. Clicca il mega pulsante verde **Genera Token di accesso** e ri-conferma il popup di Facebook.
+7. ORA CI SIAMO: Torna sul menu a tendina **Utente o Pagina** e aprilo. Clicca sul **Nome della tua Pagina** (es. "Sienna Fox").
+8. La stringa lunghissima al centro dello schermo cambia: **quello è il tuo Token Pagina**! Copiatelo da qualche parte.
+
+### Rendere il Token infinito (Long-Lived)
 
 Per un bot autonomo, ti serve un token che non scada ogni ora.
 
@@ -73,30 +91,41 @@ Per un bot autonomo, ti serve un token che non scada ogni ora.
 3. In fondo a quella pagina, clicca su **Extend Access Token** (Estendi Token).
 4. Questo ti genererà un token a lunga scadenza (valido per 60 giorni). **Copia questo token**. Questo diventerà la tua variabile `META_ACCESS_TOKEN`.
 
-### Trovare i tuoi ID
+### Trovare i tuoi ID (Facebook Page ID e Instagram Account ID)
 
-Per far funzionare il codice ti servono anche l'ID della Pagina Facebook e l'ID dell'Account Instagram.
+Per far funzionare lo script di posting (e incollarli nel file `.env`), Zirelia ha bisogno di sapere esattamente l'ID della Pagina ponte e l'ID del profilo Instagram. Il Graph API Explorer offre la via più semplice senza impazzire coi JSON:
 
-1. Nel Graph API Explorer, scrivi `me/accounts` nella barra di query in alto e clicca **Submit** (Invia).
-2. Nella risposta JSON (il testo nero a destra), cerca l'ID della Pagina Facebook collegata (sarà un numero lungo). Questo è il tuo `FACEBOOK_PAGE_ID`.
-3. Adesso, scrivi `{FACEBOOK_PAGE_ID}?fields=instagram_business_account` nella barra di query (sostituendo col numero che hai appena trovato) e clicca **Submit**.
-4. La risposta conterrà un campo `instagram_business_account` con un altro ID. Questo è il tuo `INSTAGRAM_ACCOUNT_ID`.
-
----
+1. Torna nel **Graph API Explorer** (assicurandoti che il Token della tua Pagina sia ancora caricato nel campo "Token di Accesso").
+2. Nel riquadro a sinistra intitolato **Informazioni del Token d'Accesso**, individua la riga azzurra "ID dell'app" cliccabile, o meglio ancora, la riga **ID Pagina** che compare quando generi un Page Token.
+3. Se non la vedi, nel campo query in alto (dove c'è scritto `GET v18.0 /`) scrivi semplicemente `me` e clicca **Invia** (Submit).
+4. La risposta JSON a destra sarà tipo:
+   ```json
+   {
+     "name": "Nome Tua Pagina",
+     "id": "123456789012345"
+   }
+   ```
+5. Quel numero `123456789012345` è il tuo **`FACEBOOK_PAGE_ID`**. Copialo e mettilo nel file `.env`.
+6. Ora cambia la query in alto scrivendo: `{IL_TUO_PAGE_ID}?fields=instagram_business_account` (sostituisci la parte tra parentesi col numero copiato prima) e clicca di nuovo **Invia**.
+7. La risposta diventerà:
+   ```json
+   {
+     "instagram_business_account": {
+       "id": "987654321098765"
+     },
+     "id": "123456789012345"
+   }
+   ```
+8. Quel nuovo numero sotto `instagram_business_account` (es. `987654321098765`) è il tuo **`INSTAGRAM_ACCOUNT_ID`**. Copialo e salvalo nel `.env`.
 
 ## Parte 3: Configurare le API di Threads
 
-L'API per Threads è separata da quella di Instagram, ma viene gestita sempre dentro la stessa Meta App.
+Se vuoi postare anche su Threads, devi aggiungere il relativo prodotto. Nelle App di tipo "Aziendale", Threads potrebbe trovarsi in una sezione diversa rispetto ai riquadri principali.
 
-1. Torna alla Dashboard della tua App.
-2. Clicca su **Add Product** (Aggiungi Prodotto) nella barra a sinistra.
-3. Trova **Threads API** e clicca **Set Up**.
-4. Nella barra di sinistra sotto Threads API, vai su **Settings** (Impostazioni).
-5. Devi configurare le impostazioni OAuth. Aggiungi `https://localhost` o la tua URL locale di sviluppo sotto i **Valid OAuth Redirect URIs**.
-6. Come per Instagram, serve un Token. Meta mette a disposizione un [Threads API Token Generator Tool](https://developers.facebook.com/docs/threads/get-started) apposito per facilitare i test.
-    * In alternativa, puoi usare di nuovo il Graph API Explorer, ma stavolta chiedendo i permessi specifici di Threads (`threads_basic`, `threads_content_publish`).
-7. Genera un token a lunga scadenza seguendo una procedura molto simile a quella di Instagram (scambiando il token breve con uno lungo tramite l'endpoint `/oauth/access_token`).
-    * *Nota: Anche i token di Threads in genere durano 60 giorni e vanno rinfrescati.*
+1. Dal menu a sinistra, clicca su **Casi d'Uso** (se presente) o cerca Threads tra i Prodotti.
+2. Se usi i "Casi d'Uso", seleziona l'opzione per personalizzare i permessi e clicca *Aggiungi*. Cerca **Threads API**.
+3. Nelle impostazioni specifiche di Threads (se richieste), aggiungi `https://localhost` o la tua URL locale sotto i **Valid OAuth Redirect URIs**.
+4. Potrai richiedere il token per Threads direttamente dal Graph API Explorer usando gli stessi passaggi per Instagram, chiedendo però i permessi `threads_basic` e `threads_content_publish`.
 
 ---
 

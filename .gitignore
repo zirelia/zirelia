@@ -11,3 +11,4 @@ venv/
 generated_images/
 influencer.db
 site/
+memory_db/

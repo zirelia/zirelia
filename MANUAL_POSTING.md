@@ -8,7 +8,7 @@ Usare durante le prime settimane con account nuovo.
 ## Genera testo + immagine (senza postare)
 
 ```bash
-docker compose run --rm app python virtual_influencer_engine/main.py \
+docker compose run --rm app python main.py \
   --platform twitter \
   --mode hybrid \
   --dry-run
@@ -24,7 +24,7 @@ Il log mostra:
 ## Genera solo testo (nessuna immagine, nessun costo Replicate)
 
 ```bash
-docker compose run --rm app python virtual_influencer_engine/main.py \
+docker compose run --rm app python main.py \
   --platform twitter \
   --mode text \
   --dry-run
@@ -35,7 +35,7 @@ docker compose run --rm app python virtual_influencer_engine/main.py \
 ## Forza un topic specifico
 
 ```bash
-docker compose run --rm app python virtual_influencer_engine/main.py \
+docker compose run --rm app python main.py \
   --platform twitter \
   --mode hybrid \
   --topic "morning coffee ritual" \
@@ -49,7 +49,7 @@ docker compose run --rm app python virtual_influencer_engine/main.py \
 Rimuovi `--dry-run`:
 
 ```bash
-docker compose run --rm app python virtual_influencer_engine/main.py \
+docker compose run --rm app python main.py \
   --platform twitter \
   --mode hybrid
 ```

@@ -40,8 +40,11 @@ class MetaClient:
         """
         Publishes a post to Instagram (Business).
         Step 1: Create Media Container
-        Step 2: Publish Container
+        Step 2: Check Container Status
+        Step 3: Publish Container
         """
+        import time
+
         # Step 1: Create Container
         url_media = f"{self.BASE_URL}/{self.ig_account_id}/media"
         payload_media = {
@@ -54,8 +57,33 @@ class MetaClient:
             return response # Error
 
         container_id = response["id"]
+        logger.info(f"Instagram: Created Media Container {container_id}. Waiting for processing...")
 
-        # Step 2: Publish
+        # Step 2: Check Container Status (Polling)
+        url_status = f"{self.BASE_URL}/{container_id}"
+        payload_status = {
+            "fields": "status_code",
+            "access_token": self.access_token
+        }
+        
+        # Wait up to 30 seconds for Meta to download and process the image from Replicate
+        max_attempts = 6
+        for attempt in range(max_attempts):
+            time.sleep(5) # wait 5s between checks
+            status_resp = self._make_request("GET", url_status, payload_status)
+            status_code = status_resp.get("status_code", "ERROR")
+            
+            logger.info(f"Instagram: Container status: {status_code} (Attempt {attempt+1}/{max_attempts})")
+            
+            if status_code == "FINISHED":
+                break
+            elif status_code == "ERROR":
+                return {"error": "Instagram failed to process the image container."}
+            elif attempt == max_attempts - 1:
+                logger.warning("Instagram: Container processing taking too long. Attempting to publish anyway...")
+
+        # Step 3: Publish
+        logger.info(f"Instagram: Publishing Media Container {container_id}...")
         url_publish = f"{self.BASE_URL}/{self.ig_account_id}/media_publish"
         payload_publish = {
             "creation_id": container_id,

@@ -21,9 +21,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: uvicorn virtual_influencer_engine.api.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - .:/app/virtual_influencer_engine
+      - .:/app
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/influencer_db
       - REDIS_URL=redis://redis:6379/0
@@ -55,7 +55,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app/virtual_influencer_engine
+      - .:/app
     environment:
       - PYTHONPATH=/app
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -72,9 +72,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A virtual_influencer_engine.workers.tasks worker --loglevel=info
+    command: celery -A workers.tasks worker --loglevel=info
     volumes:
-      - .:/app/virtual_influencer_engine
+      - .:/app
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/influencer_db
       REDIS_URL: redis://redis:6379/0
@@ -87,10 +87,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python virtual_influencer_engine/run_scheduler.py
+    command: python run_scheduler.py
     restart: unless-stopped
     volumes:
-      - .:/app/virtual_influencer_engine
+      - .:/app
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=postgresql://user:password@db:5432/influencer_db
@@ -118,11 +118,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python virtual_influencer_engine/core/engagement/replier.py
+    command: python core/engagement/replier.py
     restart: "no"
     profiles: ["manual"]
     volumes:
-      - .:/app/virtual_influencer_engine
+      - .:/app
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=postgresql://user:password@db:5432/influencer_db
@@ -141,11 +141,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python virtual_influencer_engine/core/engagement/liker.py
+    command: python core/engagement/liker.py
     restart: "no"
     profiles: ["manual"]
     volumes:
-      - .:/app/virtual_influencer_engine
+      - .:/app
     environment:
       - PYTHONPATH=/app
       - TWITTER_API_KEY=${TWITTER_API_KEY}
