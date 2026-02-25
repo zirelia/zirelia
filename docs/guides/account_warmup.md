@@ -3,7 +3,10 @@
 > [!CAUTION]
 > **Read this guide BEFORE starting the bot.** Skipping this phase is the #1 cause of shadowbans on new accounts.
 
-## The Problem: Zero Credibility
+## The Problem: Zero Credibility (Twitter vs Meta)
+
+> [!TIP]
+> **Meta (Instagram/Threads/Facebook) is much more permissive** with new accounts, provided you link your AI Page to a trusted, real, personal Facebook profile via the Developer Portal. You can usually start posting immediately. **This guide is primarily for Twitter/X.**
 
 Twitter/X uses sophisticated anti-spam algorithms. A **new account that posts automatically and regularly** is immediately flagged as a bot. The result is a **Shadowban**: your posts exist, but they are invisible to anyone not already following the account. A visitor browsing in incognito will see nothing.
 

@@ -82,14 +82,22 @@ Forget the chaotic app dashboard and go straight to the official developer tool.
 7. WE ARE CLOSE: Return to the **User or Page** dropdown and open it. Click on the **Name of your Page** (e.g., "Sienna Fox").
 8. The long string in the center of the screen will change: **that is your Page Token**! Copy it somewhere safe.
 
-### Making the Token Long-Lived
+### Making the Token TEMPORARY -> PERMANENT (Never Expires)
 
-You need a token that doesn't expire every hour for an autonomous bot.
+The default token expires after 1 hour. Extending it normally makes it last 60 days. But for an autonomous bot, you must generate a **Permanent Page Access Token**:
 
-1. Still in the Graph API Explorer, click the small blue exclamation mark (ℹ️) next to your short-lived token.
+1. Still in the Graph API Explorer (with your short-lived *User* Token already loaded), click the small blue exclamation mark (ℹ️) next to the token string.
 2. Click **Open in Access Token Tool**.
 3. At the bottom of the tool page, click **Extend Access Token**.
-4. This will generate a long-lived token (usually valid for 60 days). **Copy this token**. This will be your `META_ACCESS_TOKEN` in the `.env` file.
+4. This generates a 60-day User token. **Copy this 60-day token.**
+5. Now return to the main Graph API Explorer page.
+6. **Paste the 60-day token** into the "Access Token" field (overwriting the old one).
+7. In the API URL bar (where it says `GET v26.0 /`), delete everything and type: `me/accounts`
+8. Click **Submit**.
+9. In the black box on the right, you will see a list of your Pages. Under your Page name (e.g., Sienna Fox), you will see an `access_token` field with a very long string.
+10. **THAT TOKEN IS PERMANENT!** You can verify this by pasting it into the Access Token Debugger: the Expiration will say "Never".
+
+**Copy this permanent token.** This will be your `META_ACCESS_TOKEN` in the `.env` file, and your bot will never stop working.
 
 ### Finding your IDs (Facebook Page ID and Instagram Account ID)
 
@@ -97,7 +105,7 @@ To make the posting script work (and paste them into your `.env` file), Zirelia 
 
 1. Go back to the **Graph API Explorer** (ensure your Page Token is still loaded in the "Access Token" field).
 2. In the left panel titled **Access Token Info**, find the clickable blue "App ID" row, or even better, the **Page ID** row that appears when you generate a Page Token.
-3. If you don't see it, in the top query field (where it says `GET v18.0 /`) simply type `me` and click **Submit**.
+3. If you don't see it, in the top query field (where it says `GET v26.0 /`) simply type `me` and click **Submit**.
 4. The JSON response on the right will look like:
    ```json
    {
@@ -148,5 +156,5 @@ THREADS_USER_ID=your_threads_user_id
 
 ### Important Notes for Production
 
-*   **Token Expiration**: Meta's long-lived tokens typically expire after 60 days. In Phase 4 development, we will need to implement an automated Token Refresh script to keep the bot running indefinitely without manual intervention.
-*   **App Review**: While you are the only user of the app (Admin role), you do **not** need to submit your app for Meta App Review. You can remain in "Development" mode. However, if the tokens expire frequently, switching to "Live" mode might be necessary, though this requires fulfilling Meta's business verification requirements.
+*   **Token Expiration**: If you correctly followed the steps to obtain a **Permanent Page Access Token**, it will **never expire**. It works indefinitely unless you change your Facebook password or manually revoke the App's access from your settings.
+*   **App Review**: While you are the only user of the app (Admin role), you do **not** need to submit your app for Meta App Review. You can remain in "Development" mode. It will remain private and 100% functional for your own linked accounts.

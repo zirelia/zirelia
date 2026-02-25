@@ -82,14 +82,22 @@ Dimentica l'interfaccia caotica dell'app e vai dritto allo strumento ufficiale p
 7. ORA CI SIAMO: Torna sul menu a tendina **Utente o Pagina** e aprilo. Clicca sul **Nome della tua Pagina** (es. "Sienna Fox").
 8. La stringa lunghissima al centro dello schermo cambia: **quello è il tuo Token Pagina**! Copiatelo da qualche parte.
 
-### Rendere il Token infinito (Long-Lived)
+### Rendere il Token TEMPORANEO -> PERMANENTE (Che non scade mai)
 
-Per un bot autonomo, ti serve un token che non scada ogni ora.
+Il token di default scade dopo 1 ora. Estenderlo normalmente lo fa durare 60 giorni. Ma per un bot autonomo devi generare un **Page Access Token Permanente**:
 
-1. Rimanendo nel Graph API Explorer, clicca sul piccolo punto esclamativo blu (ℹ️) accanto al tuo token temporaneo.
+1. Rimanendo nel Graph API Explorer (con il tuo Token *Utente* scovato in precedenza già selezionato), clicca sul piccolo punto esclamativo blu (ℹ️) accanto alla stringa del token.
 2. Clicca su **Open in Access Token Tool** (Apri nello strumento per i Token).
 3. In fondo a quella pagina, clicca su **Extend Access Token** (Estendi Token).
-4. Questo ti genererà un token a lunga scadenza (valido per 60 giorni). **Copia questo token**. Questo diventerà la tua variabile `META_ACCESS_TOKEN`.
+4. Questo ti genera e ti fa copiare un token "User" valido 60 giorni. **Copia questo token di 60 giorni.**
+5. Ora ritorna alla pagina principale del Graph API Explorer.
+6. **Incolla il token di 60 giorni** all'interno della barra "Token di accesso" (cancellando quello vecchio).
+7. Nella barra dell'URL API (dove c'è scritto `GET v26.0 /`), cancella tutto e scrivi: `me/accounts`
+8. Clicca **Invia** (Submit).
+9. Nel box nero a destra apparirà la lista delle tue Pagine. Sotto il nome della tua Pagina (es. Sienna Fox), vedrai una riga `access_token` con una stringa lunghissima.
+10. **QUEL TOKEN È PERMANENTE!** Puoi verificarlo incollandolo nell'Access Token Debugger: alla voce Scadenza ci sarà scritto "Mai" (Never).
+
+**Copia quest'ultimo token**. Questo diventerà la tua variabile `META_ACCESS_TOKEN` nel file `.env`, e il tuo bot non smetterà mai di funzionare.
 
 ### Trovare i tuoi ID (Facebook Page ID e Instagram Account ID)
 
@@ -97,7 +105,7 @@ Per far funzionare lo script di posting (e incollarli nel file `.env`), Zirelia 
 
 1. Torna nel **Graph API Explorer** (assicurandoti che il Token della tua Pagina sia ancora caricato nel campo "Token di Accesso").
 2. Nel riquadro a sinistra intitolato **Informazioni del Token d'Accesso**, individua la riga azzurra "ID dell'app" cliccabile, o meglio ancora, la riga **ID Pagina** che compare quando generi un Page Token.
-3. Se non la vedi, nel campo query in alto (dove c'è scritto `GET v18.0 /`) scrivi semplicemente `me` e clicca **Invia** (Submit).
+3. Se non la vedi, nel campo query in alto (dove c'è scritto `GET v26.0 /`) scrivi semplicemente `me` e clicca **Invia** (Submit).
 4. La risposta JSON a destra sarà tipo:
    ```json
    {
@@ -143,5 +151,5 @@ Alla fine del processo, dovresti avere queste 5 credenziali indispensabili per f
 
 ### Note Finali per la Produzione
 
-*   **Scadenza Token**: I token di 60 giorni **scadranno**. Più avanti nello sviluppo dovremo scrivere uno script automatico che "rinfresca" il token ogni 50 giorni (il processo è gratuito e può essere fatto via codice).
+*   **Scadenza Token**: Se hai seguito correttamente il passaggio per ottenere il **Page Access Token Permanente**, questo **non scadrà mai**. Funzionerà a tempo indeterminato a meno che tu non cambi la password di Facebook o revochi manualmente l'accesso all'App dalle impostazioni.
 *   **App Review (Revisione App)**: Finché sei l'unica persona ad usare l'app (in qualità di Amministratore), l'app può rimanere in modalità **"Sviluppo" (Development)**. Non c'è bisogno di sottometterla alla lunga revisione di Meta e di farla diventare Pubblica. Rimane privata e funzionante al 100% per i tuoi account.

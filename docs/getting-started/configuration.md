@@ -25,6 +25,21 @@ Create a `.env` file in the `virtual_influencer_engine` root directory.
 | `TWITTER_ACCESS_TOKEN` | OAuth 1.0a Access Token (Read/Write). | ✅ Yes |
 | `TWITTER_ACCESS_TOKEN_SECRET` | OAuth 1.0a Secret. | ✅ Yes |
 
+### Meta (Facebook & Instagram)
+| Variable | Description | Required? |
+| :--- | :--- | :--- |
+| `META_APP_ID` | Facebook Developer App ID. | 🔹 If using FB/IG |
+| `META_APP_SECRET` | Facebook Developer App Secret. | 🔹 If using FB/IG |
+| `META_ACCESS_TOKEN` | Permanent Page Access Token. | 🔹 If using FB/IG |
+| `FACEBOOK_PAGE_ID` | The ID of the bridging Facebook Page. | 🔹 If using FB/IG |
+| `INSTAGRAM_ACCOUNT_ID` | The ID of the linked Professional Instagram. | 🔹 If using Instagram |
+
+### Threads
+| Variable | Description | Required? |
+| :--- | :--- | :--- |
+| `THREADS_ACCESS_TOKEN` | Long-lived Threads API Token. | 🔹 If using Threads |
+| `THREADS_USER_ID` | Threads User ID. | 🔹 If using Threads |
+
 ### Automation Settings
 | Variable | Description | Default |
 | :--- | :--- | :--- |

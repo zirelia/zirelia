@@ -14,41 +14,46 @@ Significa che la tua App Developer (Zirelia Sienna Fox AI) non è stata corretta
 
 Per sbloccare la situazione dobbiamo "resettare" il collegamento invisibile tra il tuo account e l'app, forzando Meta a richiederci esplicitamente i permessi per la Pagina.
 
-### Step 1: Rimuovere l'autorizzazione corrotta da Facebook
-1. Apri una normale finestra del browser e vai su [Facebook.com](https://www.facebook.com/). Assicurati di essere loggato con il tuo **Profilo Personale** (quello amministratore della Pagina).
-2. Fai clic sulla tua foto profilo in alto a destra e vai su **Impostazioni e privacy > Impostazioni**.
-3. Nel menu laterale sinistro, scorri verso il basso e clicca su **Integrazioni Business** (o *Business Integrations* se hai Facebook in inglese).
-   * *(Nota: a volte Meta sposta questa impostazione sotto "Sicurezza e accesso" o "App e siti web", cercala lì se non la trovi).*
-4. Nell'elenco delle integrazioni attive, troverai la tua app (es. **Zirelia Sienna Fox AI**).
-5. Selezionala e clicca sul pulsante **Rimuovi** (Remove).
-   * ⚠️ **Tranquillo!** Questo *NON* cancella l'app che hai creato nel portale Sviluppatori (Developer Portal). Cancella semplicemente la sua autorizzazione "buggata" a operare sul tuo account.
-6. Conferma la rimozione dal popup che appare.
+### Soluzione 1: Il trucco del "Modifica accesso" nel Popup (Causa più frequente)
+Quando rimuovi l'app e la ricolleghi, Facebook ha iniziato di recente a nascondere la selezione delle pagine. Se clicchi semplicemente "Continua come [Nome]", non seleziona nulla!
 
-### Step 2: Ricollegare l'App richiedendo i permessi giusti
-1. Chiudi e riapri il [Graph API Explorer](https://developers.facebook.com/tools/explorer/).
-2. A destra, assicurati che la tua App ("Zirelia SiennaFox AI") sia selezionata nel primo menu a tendina.
-3. Clicca sul menu a tendina **"Utente o Pagina"** e seleziona la primissima voce: **Ottieni token di accesso dell'utente** (Get User Access Token).
-4. Essendo l'app stata appena rimossa, **ti apparirà di nuovo il popup di login di Facebook**. Clicca "Continua come [Tuo Nome]".
-5. **FONDAMENTALE (NON SKIPPARE):** La schermata successiva ti chiederà *"A quali Pagine vuoi che l'app acceda?"*. **Assicurati di spuntare la casella accanto a Itssiennafox** (o Seleziona Tutte).
-6. La schermata dopo ti chiederà *"A quali account Instagram vuoi accedere?"*. Spunta anche lì il profilo di Siennafox.
-7. Dai Conferma e attendi che il popup si chiuda.
-8. Ora, nel box **Autorizzazioni** a destra nel Graph Explorer, assicurati che siano inserite queste 5 voci esatte:
-   * `instagram_basic`
-   * `instagram_content_publish`
-   * `pages_show_list`
-   * `pages_read_engagement`
-   * `pages_manage_posts`
-9. Clicca il mega pulsante verde **Genera Token d'accesso**.
-10. Se richiesto, riconferma il popup per i permessi aggiuntivi.
+1. Apri una normale finestra del browser e vai su [Facebook.com](https://www.facebook.com/). Assicurati di essere loggato con il tuo Profilo Personale.
+2. Vai su **Impostazioni e privacy > Impostazioni > Integrazioni Business** (o *App e siti web*).
+3. Trova la tua app (es. **Zirelia Sienna Fox AI**) e clicca su **Rimuovi**. (Tranquillo, non cancella l'app dal portale Developer).
+4. Torna nel [Graph API Explorer](https://developers.facebook.com/tools/explorer/) e assicurati di richiedere un Token Utente (dal menu a tendina scegli **Ottieni token di accesso dell'utente**).
+5. Clicca su l'enorme bottone blu **Generate Access Token**.
+6. Quando si apre la finestra di Facebook, **NON cliccare subito "Continua"**.
+7. Cerca e clicca sul testo blu **"Modifica impostazioni"**, **"Scegli a cosa consentire l'accesso"** o **"Modifica accesso precedente"**.
+8. Ti apparirà una lista. **Devi mettere la spunta manualmente** di fianco alla pagina Facebook *Zirelia Sienna Fox* e all'account Instagram ad essa collegato.
+9. Solo dopo aver visto con i tuoi occhi che la spunta c'è, dai l'Ok e chiudi il popup.
+10. Ora prova a selezionare la tua Pagina dal menu a tendina "Utente o Pagina" (seleziona *Token di accesso alla Pagina* e poi cliccaci).
 
-### Step 3: Il Test della Verità (Generare il Page Token)
+### Soluzione 2: Aggiungere i permessi aziendali
+Se la tua pagina è collegata a un account Instagram o a Meta Business Suite, Meta blocca segretamente la generazione del Token di Pagina se non richiedi anche l'accesso aziendale.
+
+1. Nel Graph API Explorer, guarda il riquadro bianco **"Aggiungi un'autorizzazione"**.
+2. Oltre ai permessi classici (`instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`), cerca e aggiungi `business_management`.
+3. Cerca e aggiungi anche `pages_manage_metadata`.
+4. Ricollegati cliccando il bottone blu **Generate Access Token** (di nuovo: fai attenzione al popup, confermando le spunte come nella Soluzione 1).
+5. Riprova a richiedere il Token di Pagina dal menu a tendina.
+
+### Soluzione 3: Allineare il Business Manager dell'App (Per app in Sviluppo)
+Se la tua App è in modalità Sviluppo (Development), Meta ti impedisce di prendere i Token per le Pagine se l'App e la Pagina non risiedono dentro lo **stesso Business Manager / Portfolio**.
+
+1. Vai sul [portale Sviluppatori Meta](https://developers.facebook.com/apps/) e apri la tua App.
+2. Nel menu a sinistra, vai su **Impostazioni (Settings) -> Base (Basic)**.
+3. Scorri verso il basso fino a trovare la voce **Portfolio Business** (o Account Business Manager).
+4. Se c'è scritto "Nessun account selezionato" oppure è selezionato un Business Manager diverso da quello da cui gestisci la pagina su Facebook, è questo il problema!
+5. Seleziona dal menu a tendina il Business Manager corretto che è proprietario della pagina e salva le modifiche.
+6. Torna nel Graph Explorer e riprova a generare il token.
+
+---
+
+### Il Test della Verità (Verifica del Funzionamento)
 A questo punto la connessione d'acciaio è stata stabilita.
-1. Clicca nuovamente sul menu a tendina **"Utente o Pagina"**.
-2. Guarda sotto la voce grigia **"Token di accesso alla Pagina"**: ci sarà il nome della tua Pagina (Itssiennafox).
-3. **Cliccaci sopra!**
-4. Questa volta il menu *non rimbalzerà* indietro, e la stringa enorme al centro della pagina *(Token di accesso)* cambierà.
-5. Hai appena ottenuto il tuo **Page Access Token**.
-
-Per controprova, scrivi `me/accounts` nella barra in alto e clicca **Invia** (Submit). Nel riquadro nero a destra apparirà finalmente l'oggetto JSON con i dati della tua Pagina.
+1. Clicca sul menu a tendina **"Utente o Pagina"** nel Graph API Explorer.
+2. Sotto **"Token di accesso alla Pagina"**, clicca sul nome della tua Pagina.
+3. Questa volta il menu *non rimbalzerà* indietro, e la stringa enorme *(Token di accesso)* cambierà.
+4. Per controprova, scrivi `me/accounts` nella barra in alto e clicca **Invia** (Submit). Nel riquadro nero apparirà finalmente l'oggetto JSON con i dati della tua Pagina!
 
 ✅ Ora non ti resta che estendere il Token a 60 giorni (cliccando la `(ℹ️) blu -> Apri strumento -> Estendi in fondo`) e incollarlo nel tuo file `.env`!

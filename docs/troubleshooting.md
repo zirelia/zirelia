@@ -81,3 +81,41 @@ To make sure everything is running (and not "Exited"):
 ```bash
 docker compose ps
 ```
+
+---
+
+## 🔑 Meta Graph API: "User Token" Revert Bug & Empty `me/accounts`
+
+### The Problem
+When trying to obtain a **Page Access Token** via the Graph API Explorer:
+1. The "User or Page" dropdown **reverts back to User Token** immediately after you select your Page.
+2. Querying `me/accounts` returns an empty array `{"data": []}` instead of your page details.
+
+### Why is this happening?
+Meta often loses the connection between your developer App and your Page's permissions, or it hides the page selection screen during login for new apps.
+
+### Solutions (Try in order)
+
+#### Solution 1: "Edit previous access" Trick (Most Common)
+Meta has recently started hiding the page selection checkboxes during the login popup.
+1. In a normal browser tab, go to **Facebook > Settings & privacy > Settings > Business Integrations** and **Remove** your App.
+2. In the Graph API Explorer, verify you are requesting a User Token, then click **Generate Access Token**.
+3. When the Facebook popup appears, **DO NOT click "Continue as [Your Name]" immediately**.
+4. Click on **"Edit settings"**, **"Choose what you allow"**, or **"Edit previous access"**.
+5. Manually check the boxes next to your Facebook Page and Instagram Account.
+6. Confirm and close the popup. Now try selecting your Page from the dropdown again.
+
+#### Solution 2: Add Business Permissions
+If your page is linked to a Meta Business Suite, Meta secretly blocks token generation unless you request business access.
+1. In the Graph API Explorer permissions box, add `business_management`.
+2. Add `pages_manage_metadata`.
+3. Click **Generate Access Token** again (make sure to select the page in the popup).
+4. Try selecting your Page token.
+
+#### Solution 3: Align Business Manager (Development Mode)
+If your App is in "Development" mode, Meta prevents token generation if the App and the Page are not in the exact same Meta Business Manager / Portfolio.
+1. Go to your App dashboard on the Meta Developer Portal.
+2. Navigate to **Settings -> Basic**.
+3. Scroll down to **Business Portfolio**.
+4. Select the specific Business Manager that owns the Facebook Page. If it says "No Business Manager selected", you must select the correct one and save.
+5. Return to the Graph API Explorer and try again.

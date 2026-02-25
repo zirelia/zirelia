@@ -20,8 +20,10 @@
 
 ## ⚠️ Important — Read Before Starting
 
-> **New account?** Starting the bot without a proper warm-up is the #1 cause of permanent shadowbans.
+> **New Twitter/X account?** Starting the bot without a proper warm-up is the #1 cause of permanent shadowbans.
 > 👉 **[Read the Account Warm-Up & Anti-Ban Guide first.](https://zirelia.github.io/zirelia/guides/account_warmup/)**
+> 
+> *Note: Meta (Instagram/Facebook) is significantly more permissive for new Developer Apps linked to a real profile. The strict warmup primarily applies to Twitter.*
 
 ---
 
@@ -124,7 +126,13 @@ TWITTER_API_KEY=...
 TWITTER_API_SECRET=...
 TWITTER_ACCESS_TOKEN=...
 TWITTER_ACCESS_TOKEN_SECRET=...
-TWITTER_BEARER_TOKEN=...
+
+# Meta & Instagram (Optional)
+META_APP_ID=...
+META_APP_SECRET=...
+META_ACCESS_TOKEN=...
+FACEBOOK_PAGE_ID=...
+INSTAGRAM_ACCOUNT_ID=...
 ```
 
 ### 3. Launch
@@ -145,14 +153,15 @@ docker compose logs scheduler -f
 ### 5. Run a single post manually
 
 ```bash
+```bash
 # Dry run (no actual posting)
-python main.py --platform twitter --dry-run
+docker compose run --rm app python main.py --platform twitter --dry-run
 
 # Post now
-python main.py --platform twitter --mode hybrid
+docker compose run --rm app python main.py --platform twitter --mode hybrid
 
 # Text-only post about a specific topic
-python main.py --platform twitter --mode text --topic "morning coffee ritual"
+docker compose run --rm app python main.py --platform twitter --mode text --topic "morning coffee ritual"
 ```
 
 ---
@@ -160,7 +169,7 @@ python main.py --platform twitter --mode text --topic "morning coffee ritual"
 ## ⚙️ CLI Reference
 
 ```
-python main.py [OPTIONS]
+docker compose run --rm app python main.py [OPTIONS]
 
 Options:
   --platform  {twitter|instagram|facebook|threads|all}
