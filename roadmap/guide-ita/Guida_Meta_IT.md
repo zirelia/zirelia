@@ -126,30 +126,110 @@ Per far funzionare lo script di posting (e incollarli nel file `.env`), Zirelia 
    ```
 8. Quel nuovo numero sotto `instagram_business_account` (es. `987654321098765`) è il tuo **`INSTAGRAM_ACCOUNT_ID`**. Copialo e salvalo nel `.env`.
 
-## Parte 3: Configurare le API di Threads
+## Parte 3: Configurare le API di Threads (App Separata!)
 
-Se vuoi postare anche su Threads, devi aggiungere il relativo prodotto. Nelle App di tipo "Aziendale", Threads potrebbe trovarsi in una sezione diversa rispetto ai riquadri principali.
+> ⚠️ **ATTENZIONE**: Threads **NON** è un "prodotto" che puoi aggiungere alla tua app Business esistente (quella usata per Facebook e Instagram). Threads richiede la creazione di una **nuova app separata** con un Use Case dedicato. Anche il token e l'endpoint API sono completamente diversi.
 
-1. Dal menu a sinistra, clicca su **Casi d'Uso** (se presente) o cerca Threads tra i Prodotti.
-2. Se usi i "Casi d'Uso", seleziona l'opzione per personalizzare i permessi e clicca *Aggiungi*. Cerca **Threads API**.
-3. Nelle impostazioni specifiche di Threads (se richieste), aggiungi `https://localhost` o la tua URL locale sotto i **Valid OAuth Redirect URIs**.
-4. Potrai richiedere il token per Threads direttamente dal Graph API Explorer usando gli stessi passaggi per Instagram, chiedendo però i permessi `threads_basic` e `threads_content_publish`.
+### 3.1 Creare l'App per Threads
+
+1. Vai su [developers.facebook.com/apps/](https://developers.facebook.com/apps/) (sei già loggato dal setup precedente).
+2. Clicca su **Create App** (Crea App).
+3. Nella schermata dei **Use Cases** (Casi d'Uso), seleziona **"Access the Threads API"** e clicca Avanti.
+4. Dai un nome all'app (es. "Zirelia Threads"). Clicca **Crea App**.
+
+### 3.2 Aggiungere i Permessi
+
+1. Dal menu laterale della nuova app, vai su **Use Cases → Access the Threads API → Customize**.
+2. Abilita **obbligatoriamente** questi permessi:
+   * `threads_basic` (obbligatorio per tutti gli endpoint)
+   * `threads_content_publish` (obbligatorio per pubblicare)
+3. Opzionalmente puoi abilitare anche:
+   * `threads_manage_replies` (gestire risposte)
+   * `threads_read_replies` (leggere risposte)
+   * `threads_manage_insights` (analytics)
+
+### 3.3 Impostare il Redirect URI per OAuth
+
+1. Nelle impostazioni dell'app Threads, cerca la sezione **OAuth**.
+2. Sotto **Valid OAuth Redirect URIs**, aggiungi: `https://localhost/` (o la tua URL se hai un server).
+3. Salva le modifiche.
+
+### 3.4 Aggiungere un Tester di Threads
+
+Finché l'app è in modalità Sviluppo, devi aggiungere l'account Threads che vuoi usare come "tester":
+
+1. Nella Dashboard dell'app, vai su **Ruoli dell'app (App Roles) → Ruoli (Roles)**.
+2. Clicca **Aggiungi persone (Add People)** e seleziona **Tester di Threads (Threads Tester)**.
+3. Inserisci il nome utente dell'account Threads della tua AI.
+4. **L'invito va accettato dall'account Threads**: vai su [threads.net/settings/account](https://www.threads.net/settings/account) → **Autorizzazioni del sito web (Website permissions)** → **Inviti (Invites)** → Accetta.
+
+### 3.5 Generare il Token di Threads
+
+Il token Threads **NON** si genera dal Graph API Explorer classico. Serve il flusso OAuth dedicato:
+
+1. Apri questo URL nel tuo browser (sostituisci i valori tra parentesi con quelli della tua app Threads — li trovi nella Dashboard dell'app sotto **Impostazioni > Di base**):
+
+```
+https://threads.net/oauth/authorize?client_id={THREADS_APP_ID}&redirect_uri={IL_TUO_REDIRECT_URI}&scope=threads_basic,threads_content_publish&response_type=code
+```
+
+2. Si aprirà la pagina di autorizzazione di Threads. Fai il login col tuo account Threads e autorizza l'app.
+3. Verrai reindirizzato al tuo Redirect URI con un parametro `?code=ABC123...` nell'URL. **Copia quel codice.**
+4. Scambia il codice con un **token di breve durata** (1 ora) facendo questa chiamata (da terminale o Postman):
+
+```bash
+curl -X POST "https://graph.threads.net/oauth/access_token" \
+  -d "client_id={THREADS_APP_ID}" \
+  -d "client_secret={THREADS_APP_SECRET}" \
+  -d "grant_type=authorization_code" \
+  -d "redirect_uri={IL_TUO_REDIRECT_URI}" \
+  -d "code={IL_CODICE_COPIATO}"
+```
+
+5. Dalla risposta otterrai `access_token` e `user_id`. **Salva entrambi!** Il `user_id` è il tuo `THREADS_USER_ID`.
+6. Scambia il token di breve durata con uno di **lunga durata** (60 giorni):
+
+```bash
+curl -s "https://graph.threads.net/access_token?grant_type=th_exchange_token&client_secret={THREADS_APP_SECRET}&access_token={TOKEN_BREVE_DURATA}"
+```
+
+7. Il token di lunga durata restituito è il tuo **`THREADS_ACCESS_TOKEN`**. Copialo nel file `.env`.
+
+> ⚠️ **IMPORTANTE: Il token Threads NON è permanente!** Dura 60 giorni e va rinnovato manualmente o tramite script. Per rinnovarlo prima della scadenza:
+> ```bash
+> curl -s "https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token={IL_TUO_TOKEN_ATTUALE}"
+> ```
+
+### 3.6 Trovare il Threads User ID
+
+Se non lo hai annotato al passo 3.5.5, puoi recuperarlo così:
+
+1. Con il token Threads valido, fai:
+```bash
+curl -s "https://graph.threads.net/v1.0/me?access_token={THREADS_ACCESS_TOKEN}"
+```
+2. La risposta conterrà `"id": "123456789"` — quello è il tuo `THREADS_USER_ID`.
 
 ---
 
 ## Parte 4: Riepilogo Credenziali
 
-Alla fine del processo, dovresti avere queste 5 credenziali indispensabili per far funzionare lo script in Python:
+Alla fine del processo, dovresti avere queste credenziali nel tuo file `.env`:
 
+**Per Facebook & Instagram** (dalla tua app Business):
 1. `META_APP_ID`: dalla Dashboard principale dell'app.
 2. `META_APP_SECRET`: scorrendo in basso nella Dashboard (devi cliccare un bottone per mostrarla).
-3. `META_ACCESS_TOKEN`: il token di 60 giorni che hai generato.
+3. `META_ACCESS_TOKEN`: il Page Access Token **permanente** generato tramite il Graph API Explorer.
 4. `FACEBOOK_PAGE_ID`: trovato tramite Explorer.
 5. `INSTAGRAM_ACCOUNT_ID`: trovato tramite Explorer.
 
-*(Più token e ID simili per Threads, se vuoi postare anche lì).*
+**Per Threads** (dalla tua app separata con Use Case "Access the Threads API"):
+6. `THREADS_ACCESS_TOKEN`: il token di lunga durata (60 giorni) ottenuto dal flusso OAuth di Threads.
+7. `THREADS_USER_ID`: il tuo ID utente Threads, ottenuto durante lo scambio del codice o tramite l'endpoint `me`.
 
 ### Note Finali per la Produzione
 
-*   **Scadenza Token**: Se hai seguito correttamente il passaggio per ottenere il **Page Access Token Permanente**, questo **non scadrà mai**. Funzionerà a tempo indeterminato a meno che tu non cambi la password di Facebook o revochi manualmente l'accesso all'App dalle impostazioni.
-*   **App Review (Revisione App)**: Finché sei l'unica persona ad usare l'app (in qualità di Amministratore), l'app può rimanere in modalità **"Sviluppo" (Development)**. Non c'è bisogno di sottometterla alla lunga revisione di Meta e di farla diventare Pubblica. Rimane privata e funzionante al 100% per i tuoi account.
+*   **Scadenza Token Facebook/Instagram**: Se hai seguito correttamente il passaggio per ottenere il **Page Access Token Permanente**, questo **non scadrà mai**. Funzionerà a tempo indeterminato a meno che tu non cambi la password di Facebook o revochi manualmente l'accesso all'App dalle impostazioni.
+*   **Scadenza Token Threads**: Il token Threads dura **60 giorni** e va rinnovato. Puoi usare l'endpoint `refresh_access_token` per estenderlo di altri 60 giorni. Se scade, dovrai ripetere il flusso OAuth. Un buon approccio è creare un cron job che rinnova il token ogni 50 giorni.
+*   **App Review (Revisione App)**: Finché sei l'unica persona ad usare l'app (in qualità di Amministratore/Tester), entrambe le app possono rimanere in modalità **"Sviluppo" (Development)**. Non c'è bisogno di sottometterle alla lunga revisione di Meta.
+

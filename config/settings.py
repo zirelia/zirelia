@@ -87,12 +87,16 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     HUGGINGFACE_TOKEN: Optional[str] = None
     
-    # Meta (Facebook, Instagram, Threads)
+    # Meta (Facebook, Instagram)
     META_APP_ID: Optional[str] = None
     META_APP_SECRET: Optional[str] = None
     META_ACCESS_TOKEN: Optional[str] = None
     FACEBOOK_PAGE_ID: Optional[str] = None
     INSTAGRAM_ACCOUNT_ID: Optional[str] = None
+    
+    # Threads (separate app & token from Meta)
+    THREADS_ACCESS_TOKEN: Optional[str] = None
+    THREADS_USER_ID: Optional[str] = None
     
     # Twitter (X)
     TWITTER_API_KEY: Optional[str] = None

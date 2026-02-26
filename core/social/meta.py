@@ -11,7 +11,8 @@ settings = get_settings()
 
 class MetaClient:
     """
-    Client for Meta Graph API (Facebook, Instagram, Threads).
+    Client for Meta Graph API (Facebook, Instagram).
+    Note: Threads uses a separate API — see ThreadsClient below.
     """
     BASE_URL = "https://graph.facebook.com/v18.0"
 
@@ -91,36 +92,6 @@ class MetaClient:
         }
         return self._make_request("POST", url_publish, payload_publish)
 
-    def post_threads(self, text: str, image_url: str = None) -> Dict[str, Any]:
-        """
-        Publishes to Threads.
-        Similar to IG: Create Container -> Publish.
-        """
-        # Step 1: Create Container
-        url_media = f"{self.BASE_URL}/{self.ig_account_id}/threads" # Endpoint might differ slightly based on rollout
-        # Note: Threads API is new. Using standard container pattern.
-        payload_media = {
-            "media_type": "TEXT" if not image_url else "IMAGE",
-            "text": text,
-            "access_token": self.access_token
-        }
-        if image_url:
-            payload_media["image_url"] = image_url
-            
-        response = self._make_request("POST", url_media, payload_media)
-        if "id" not in response:
-            return response
-
-        container_id = response["id"]
-
-        # Step 2: Publish
-        url_publish = f"{self.BASE_URL}/{self.ig_account_id}/threads_publish"
-        payload_publish = {
-            "creation_id": container_id,
-            "access_token": self.access_token
-        }
-        return self._make_request("POST", url_publish, payload_publish)
-
     def _make_request(self, method: str, url: str, params: Dict) -> Dict:
         if not self.access_token:
              return {"error": "No Access Token"}
@@ -137,4 +108,72 @@ class MetaClient:
             return data
         except Exception as e:
             logger.error(f"Request failed: {e}")
+            return {"error": str(e)}
+
+
+class ThreadsClient:
+    """
+    Client for the Threads API (graph.threads.net).
+    Requires a SEPARATE Meta App created with the "Access the Threads API" use case,
+    its own OAuth token, and a Threads User ID.
+    Official docs: https://developers.facebook.com/docs/threads
+    """
+    BASE_URL = "https://graph.threads.net/v1.0"
+
+    def __init__(self):
+        self.access_token = settings.THREADS_ACCESS_TOKEN
+        self.threads_user_id = settings.THREADS_USER_ID
+
+        if not self.access_token:
+            logger.warning("Threads Access Token missing. Threads posting will fail.")
+        if not self.threads_user_id:
+            logger.warning("Threads User ID missing. Threads posting will fail.")
+
+    def post_threads(self, text: str, image_url: str = None) -> Dict[str, Any]:
+        """
+        Publishes to Threads.
+        Step 1: Create Media Container
+        Step 2: Publish Container
+        """
+        if not self.access_token or not self.threads_user_id:
+            return {"error": "Threads credentials not configured (THREADS_ACCESS_TOKEN / THREADS_USER_ID)"}
+
+        # Step 1: Create Container
+        url_media = f"{self.BASE_URL}/{self.threads_user_id}/threads"
+        payload_media = {
+            "media_type": "TEXT" if not image_url else "IMAGE",
+            "text": text,
+            "access_token": self.access_token
+        }
+        if image_url:
+            payload_media["image_url"] = image_url
+
+        response = self._make_request("POST", url_media, payload_media)
+        if "id" not in response:
+            return response
+
+        container_id = response["id"]
+        logger.info(f"Threads: Created Media Container {container_id}")
+
+        # Step 2: Publish
+        url_publish = f"{self.BASE_URL}/{self.threads_user_id}/threads_publish"
+        payload_publish = {
+            "creation_id": container_id,
+            "access_token": self.access_token
+        }
+        return self._make_request("POST", url_publish, payload_publish)
+
+    def _make_request(self, method: str, url: str, params: Dict) -> Dict:
+        try:
+            if method == "POST":
+                resp = requests.post(url, data=params)
+            else:
+                resp = requests.get(url, params=params)
+
+            data = resp.json()
+            if "error" in data:
+                logger.error(f"Threads API Error: {data['error']}")
+            return data
+        except Exception as e:
+            logger.error(f"Threads request failed: {e}")
             return {"error": str(e)}

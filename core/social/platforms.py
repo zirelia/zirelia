@@ -5,7 +5,7 @@
 import random
 from typing import Dict, Any
 from .manager import SocialManager
-from .meta import MetaClient
+from .meta import MetaClient, ThreadsClient
 from .twitter import TwitterClient
 from core.utils.logger import logger
 
@@ -101,7 +101,12 @@ class FacebookManager(MetaPlatformManager):
     def get_metrics(self) -> Dict[str, Any]:
         return {"status": "mock"}
 
-class ThreadsManager(MetaPlatformManager):
+class ThreadsManager(SocialManager):
+    """Manager for Threads — uses its own client and API endpoint."""
+    def __init__(self, platform_name: str, config: Dict[str, Any]):
+        super().__init__(platform_name, config)
+        self.client = ThreadsClient()
+
     def post_content(self, content: str, image_path: str = None) -> Dict[str, Any]:
         if not self.safety_manager.validate_content(content):
              return {"status": "error", "message": "Safety validation failed"}
