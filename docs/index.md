@@ -4,15 +4,19 @@
 
 It combines **LLMs (OpenAI/Anthropic)** for the "Brain", **Image Diffusion Models (FLUX.1/SDXL)** for the "Imagination", and **Social APIs** for the "Hands", all wrapped in a Dockerized architecture that runs 24/7 on edge devices like a Raspberry Pi.
 
-## 📍 Current Tech Stack (as of 2026-02-20)
+## 📍 Current Tech Stack (as of 2026-02-28)
 
 | Component | Technology | Status |
 | :--- | :--- | :--- |
-| 🐦 Social Platform | Twitter / X only | ✅ Production Ready |
+| 🐦 Twitter / X | Tweepy (OAuth 1.0a) | ✅ Production Ready |
+| 📸 Instagram | Meta Graph API v18.0 | ✅ Production Ready |
+| 📘 Facebook | Meta Graph API v18.0 | ✅ Production Ready |
+| 🧵 Threads | Threads API v1.0 (Viral Strategy) | ✅ Production Ready |
 | 🎨 Image Generation | FLUX 1 via Replicate (remote API) | ✅ Production Ready |
 | 🧠 LLM Brain | OpenAI ChatGPT (GPT-4 / GPT-4o-mini) | ✅ Production Ready |
-| 📸 Instagram / Others | Not implemented | 🔴 Planned — Phase 4 |
-| 🖥️ Control Dashboard | Not implemented | 🔴 Planned — Phase 3 |
+| 🔑 Token Management | Auto-renewal for Threads (60-day tokens) | ✅ Active |
+| 🛡️ Content Safety | LLM-enforced outfit moderation | ✅ Active |
+| 🖥️ Control Dashboard | Not implemented | 🔴 Planned |
 
 > [!CAUTION]
 > **New account? Read the Warm-Up guide first!**
@@ -23,9 +27,12 @@ It combines **LLMs (OpenAI/Anthropic)** for the "Brain", **Image Diffusion Model
 
 *   **🧠 Persona Engine**: A LangChain-based brain that maintains a consistent personality, memories, and writing style defined in a simple YAML config.
 *   **🎨 Hyper-Realistic Visuals**: Integrates with Replicate to generate consistent character images using custom LoRA models (e.g., *Sienna Fox*).
-*   **🤳 Autonomous Posting**: A Smart Scheduler that randomizes posting times (Morning, Afternoon, Evening) and respects holidays/events.
+*   **🤳 Multi-Platform Posting**: Autonomous posting to Twitter, Instagram, Facebook, and Threads — each with platform-optimized content.
+*   **🧵 Threads Viral Strategy**: Hot takes, this-or-that questions, relatable rants, and subtle Instagram cross-promotion.
+*   **🔑 Auto Token Renewal**: Threads tokens are automatically refreshed 10 days before their 60-day expiration.
+*   **🛡️ Content Safety**: AI-enforced outfit moderation and visual quality control before posting.
+*   **🤳 Smart Scheduler**: Randomized posting times (Morning, Afternoon, Evening) with holiday awareness.
 *   **🔌 Easy Deployment**: Fully Dockerized stack (API, Worker, Scheduler, Redis, Postgres) ready for `docker compose up`.
-*   **🛡️ Visual QC**: AI-powered image critic that rejects anatomical hallucinations before posting.
 
 ## 📚 Documentation Structure
 

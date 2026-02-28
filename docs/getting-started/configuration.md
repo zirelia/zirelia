@@ -8,7 +8,7 @@ Zirelia is configured via two main files:
 
 ## 🔐 Environment Variables (`.env`)
 
-Create a `.env` file in the `virtual_influencer_engine` root directory.
+Create a `.env` file in the project root directory by copying `.env.template`.
 
 ### Core APIs
 | Variable | Description | Required? |
@@ -35,15 +35,26 @@ Create a `.env` file in the `virtual_influencer_engine` root directory.
 | `INSTAGRAM_ACCOUNT_ID` | The ID of the linked Professional Instagram. | 🔹 If using Instagram |
 
 ### Threads
+
+!!! warning "Separate App Required"
+    Threads requires a **completely separate Meta App** from Facebook/Instagram. See the [Meta Setup Guide](../guides/meta_setup.md) for details.
+
 | Variable | Description | Required? |
 | :--- | :--- | :--- |
-| `THREADS_ACCESS_TOKEN` | Long-lived Threads API Token. | 🔹 If using Threads |
-| `THREADS_USER_ID` | Threads User ID. | 🔹 If using Threads |
+| `THREADS_ACCESS_TOKEN` | Long-lived Threads API Token (60-day, auto-renewed). | 🔹 If using Threads |
+| `THREADS_USER_ID` | Threads User ID (fetch via `graph.threads.net/v1.0/me`). | 🔹 If using Threads |
+| `THREADS_APP_SECRET` | Threads App Secret (needed for token auto-renewal). | 🔹 If using Threads |
+
+### Threads Content Strategy
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `THREADS_TEXT_ONLY_RATIO` | Ratio of text-only posts on Threads (0.0 = always image, 1.0 = always text-only). | `0.7` |
 
 ### Automation Settings
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `MAX_DAILY_POSTS` | Maximum posts per day (1-3). | `1` |
+| `ACTIVE_PLATFORMS` | Comma-separated list of platforms to post to. | `instagram,facebook` |
 
 ### Database & Redis (Docker handles these automatically)
 | Variable | Description | Default (Docker) |
@@ -57,7 +68,7 @@ Create a `.env` file in the `virtual_influencer_engine` root directory.
 
 This YAML file defines **who the bot is**. Editing this changes the bot's entire behavior without touching code.
 
-Location: `virtual_influencer_engine/config/persona.yaml`
+Location: `config/persona.yaml`
 
 ### Structure
 
@@ -84,11 +95,22 @@ voice:
   tone: "Seductive but friendly"
   style: "Short, punchy, uses emojis naturally (✨, 😉)"
 
+# Platform-Specific Styles
+platforms:
+  twitter:
+    style: "Teasing, unpredictable, short thoughts"
+  instagram:
+    style: "High-value aesthetic, golden hour, lifestyle with class"
+  threads:
+    style: "Unfiltered thoughts, group chat energy, bold opinions, engagement bait"
+    hashtag_density: "None"
+    cross_promo: "Occasional subtle teases pointing to Instagram content"
+
 # Daily Routine (Used by Smart Scheduler)
 routine:
   morning:
     - "Waking up in silk sheets"
-    - "Morning stretch"
+    - "Morning stretch / Yoga"
   afternoon:
     - "Working from a cafe"
     - "Gym workout"
@@ -99,4 +121,4 @@ routine:
 
 ### How to update
 1.  Edit the file.
-2.  Restart the container: `docker compose restart api scheduler`
+2.  Restart the container: `docker compose restart scheduler`
