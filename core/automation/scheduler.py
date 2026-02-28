@@ -43,6 +43,16 @@ class SmartScheduler:
         """
         Creates a randomized schedule for the current day.
         """
+        # --- Threads Token Auto-Refresh (once per day) ---
+        try:
+            from core.social.token_refresh import ThreadsTokenRefresher
+            refresher = ThreadsTokenRefresher()
+            refresh_result = refresher.check_and_refresh()
+            logger.info(f"🔑 Threads token check: {refresh_result.get('status', 'unknown')}")
+        except Exception as e:
+            logger.warning(f"🔑 Threads token refresh check failed (non-fatal): {e}")
+        # -------------------------------------------------
+
         # maximize timezone correctness
         now = datetime.now(TIMEZONE)
         self.today_str = now.strftime("%Y-%m-%d")

@@ -77,7 +77,7 @@ Forget the chaotic app dashboard and go straight to the official developer tool.
     * `pages_show_list`
     * `pages_read_engagement`
     * `pages_manage_posts` (Strictly required to publish on the Facebook Page)
-    *(If you want Threads, also add `threads_basic` and `threads_content_publish`).*
+    > ⚠️ **DO NOT add Threads permissions here!** Threads requires a **completely separate** Meta App with its own OAuth flow. See **Part 4** of this guide.
 6. Click the giant green button **Generate Access Token** and re-confirm the Facebook popup.
 7. WE ARE CLOSE: Return to the **User or Page** dropdown and open it. Click on the **Name of your Page** (e.g., "Sienna Fox").
 8. The long string in the center of the screen will change: **that is your Page Token**! Copy it somewhere safe.
@@ -126,35 +126,188 @@ To make the posting script work (and paste them into your `.env` file), Zirelia 
    ```
 8. That new number under `instagram_business_account` (e.g., `987654321098765`) is your **`INSTAGRAM_ACCOUNT_ID`**. Copy it and save it in the `.env` file.
 
-## Part 3: Configuring Threads API
+---
 
-If you also want to post to Threads, you must add the related product. In "Business" Apps, Threads might be located in a different section than the main panels.
+## Part 4: Configuring the Threads API (Separate App!)
 
-1. From the left menu, click on **Use Cases** (if present) or search for Threads among the Products.
-2. If using "Use Cases", select the option to customize permissions and click *Add*. Search for **Threads API**.
-3. In the Threads specific settings (if displayed), add `https://localhost` or your local development URL to the **Valid OAuth Redirect URIs**.
-4. You can request the token for Threads directly from the Graph API Explorer using the same steps as Instagram, but asking for `threads_basic` and `threads_content_publish` permissions.
+> [!CAUTION]
+> Threads is **NOT** a "product" you can add to the existing Business App (the one used for Facebook and Instagram). Threads requires the creation of a **brand new, separate app** with a dedicated Use Case. The token and API endpoint are also completely different.
+
+> [!IMPORTANT]
+> **TWO DIFFERENT ACCOUNTS — DON'T MIX THEM UP!**
+> Throughout this process you'll use **two different accounts**:
+> - **Admin Account** (e.g., `lantoniotrento`): your personal Facebook account that manages apps on the Developer Portal.
+> - **Target Account** (e.g., `itssiennafox`): your AI's Threads account, where content will be published.
+>
+> Each step specifies which account to use.
+
+### 4.1 Creating the Threads App
+
+*👤 Use your **Admin Account** on the Developer Portal.*
+
+1. Go to [developers.facebook.com/apps/](https://developers.facebook.com/apps/).
+2. Click **Create App**.
+3. On the **Use Cases** screen, select **"Access the Threads API"** and click Next.
+4. Give the app a name (e.g., "Zirelia Threads"). Click **Create App**.
+
+### 4.2 Configuring the App (URLs + Permissions)
+
+*👤 Use your **Admin Account** on the Developer Portal.*
+
+Go to **Use Cases → Access the Threads API → Customize**. This page contains everything: credentials, URLs, and permissions.
+
+**① Note the credentials** (in the top section of the page):
+
+| Field on the Customize page | What it is | Where it's needed |
+|---|---|---|
+| **Threads App ID** | The `client_id` for OAuth | OAuth URL and curl commands |
+| **Threads App Secret** | The `client_secret` | Curl commands and `.env` as `THREADS_APP_SECRET` |
+
+> [!WARNING]
+> The **"Threads App ID"** on the Customize page is **DIFFERENT** from the App ID shown in Settings > Basic! For the OAuth URL, you must use the one from the **Customize** page.
+
+**② Fill in ALL mandatory URL fields** with the same HTTPS URL:
+
+> [!CAUTION]
+> **`https://localhost/` DOES NOT WORK!** Meta rejects `localhost` as a redirect URI for Threads apps. Use a real HTTPS URL.
+
+> [!WARNING]
+> **BEWARE OF AUTOMATIC REDIRECTS**: If your site has an automatic redirect (e.g., from `/` to `/it/`), the `code` parameter will be lost! Use a path that **doesn't redirect** (e.g., `https://your-site.github.io/callback`) — a 404 page is fine, what matters is that the URL stays visible in the address bar with the `?code=` parameter.
+
+| Field | Value |
+|---|---|
+| **Redirect callback URL** | `https://your-site.github.io/callback` |
+| **Deauthorize callback URL** | `https://your-site.github.io/callback` |
+| **Delete callback URL** | `https://your-site.github.io/callback` |
+
+**③ Enable mandatory permissions** (in the "Permissions and features" section):
+- `threads_basic` (required)
+- `threads_content_publish` (required)
+- Optional: `threads_manage_replies`, `threads_read_replies`, `threads_manage_insights`
+
+Click **Save**.
+
+### 4.3 Adding the Target Account as a Tester
+
+*👤 Steps 1-3 with **Admin Account**, steps 4-6 with **Target Account**.*
+
+While the app is in Development mode (indicated by "Not published" in the sidebar menu), only users added as "Testers" can authorize the app.
+
+**From the Developer Portal (Admin Account):**
+1. In the sidebar menu, go to **App Roles → Roles**.
+2. Click **Add People** and select **Threads Tester**.
+3. Enter the **Threads username of the Target Account** (e.g., `itssiennafox` — without the @).
+
+**From the Threads app on your phone (Target Account):**
+4. Log into the **Threads** app on your phone with the **Target Account**.
+5. Go to **☰ → Settings and privacy → Account → Website permissions → Invites**.
+6. Accept the invitation from your app.
+
+> [!TIP]
+> If you can't find "Website permissions", try: **Settings → Privacy → App invitations**. The interface changes frequently. If the Target profile is private, make it **public** first.
+
+### 4.4 Generating the Threads Token
+
+There are **two methods**. Try Method A first (simpler).
+
+#### Method A: Token Generator from the Dashboard (Recommended)
+
+*👤 Use your **Admin Account** on the Developer Portal.*
+
+1. Go to **Use Cases → Access the Threads API → Customize**.
+2. Scroll down to the **"User Token Generator"** section at the bottom of the page.
+3. Next to your tester name (e.g., itssiennafox) there should be a **"Generate token"** button.
+4. Click to generate a **long-lived token** directly — no manual OAuth flow needed!
+5. Copy the token and add it to `.env` as `THREADS_ACCESS_TOKEN`.
+
+> 💡 If the button doesn't appear or gives an error, use Method B.
+
+#### Method B: Manual OAuth Flow
+
+> [!WARNING]
+> You must be logged into Threads as the **TARGET Account** (e.g., itssiennafox), **NOT** as the admin account!
+
+**Step 1** — Open this URL in your browser (replace values with those from the Customize page in step 4.2):
+
+```
+https://threads.net/oauth/authorize?client_id={THREADS_APP_ID}&redirect_uri={YOUR_REDIRECT_URI}&scope=threads_basic,threads_content_publish&response_type=code
+```
+
+**Step 2** — Authorize the app (logged in as the Target Account).
+
+**Step 3** — The browser will take you to your redirect URI with `?code=ABC123...#_` in the address bar. **Copy the part after `?code=` and before `#_`**.
+
+**Step 4** — Exchange the code for a short-lived token (from PowerShell):
+
+```bash
+curl -X POST "https://graph.threads.net/oauth/access_token" \
+  -d "client_id={THREADS_APP_ID}" \
+  -d "client_secret={THREADS_APP_SECRET}" \
+  -d "grant_type=authorization_code" \
+  -d "redirect_uri={YOUR_REDIRECT_URI}" \
+  -d "code={THE_COPIED_CODE}"
+```
+
+> [!WARNING]
+> The `redirect_uri` must be **identical** to the one set in step 4.2 (including the trailing `/`).
+
+**Step 5** — The response will contain `access_token` and `user_id`. Save both! The `user_id` is your `THREADS_USER_ID`.
+
+**Step 6** — Exchange the short-lived token for a **long-lived token** (60 days):
+
+```bash
+curl -s "https://graph.threads.net/access_token?grant_type=th_exchange_token&client_secret={THREADS_APP_SECRET}&access_token={SHORT_LIVED_TOKEN}"
+```
+
+**Step 7** — The returned token is your **`THREADS_ACCESS_TOKEN`**. Copy it into `.env`.
+
+### 4.5 Token Renewal (60 days)
+
+> [!WARNING]
+> **The Threads token is NOT permanent!** It lasts **60 days** and must be renewed. To renew it before expiration:
+> ```bash
+> curl -s "https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token={YOUR_CURRENT_TOKEN}"
+> ```
+> A good approach is to set up a cron job that renews the token every 50 days.
+
+### 4.6 Finding the Threads User ID
+
+If you didn't save it during token creation, you can retrieve it:
+
+```bash
+curl -s "https://graph.threads.net/v1.0/me?access_token={THREADS_ACCESS_TOKEN}"
+```
+
+The response will contain `"id": "123456789"` — that is your `THREADS_USER_ID`.
 
 ---
 
-## Part 4: Updating `.env` and `mkdocs.yml`
+## Part 5: Credentials Summary
 
-Now that you have your credentials, you will add them to the `.env` file (these variables are already defined in `docker-compose.yml`).
+At the end of the process, you should have these credentials in your `.env` file:
+
+**From the Business App** (Facebook & Instagram):
 
 ```env
-# Meta / Instagram Settings
+# Meta / Instagram Settings (from the Business App)
 META_APP_ID=your_app_id_from_dashboard
 META_APP_SECRET=your_app_secret_from_dashboard
-META_ACCESS_TOKEN=your_long_lived_page_access_token
+META_ACCESS_TOKEN=your_permanent_page_access_token
 FACEBOOK_PAGE_ID=your_facebook_page_id
 INSTAGRAM_ACCOUNT_ID=your_instagram_business_account_id
+```
 
-# Threads Settings (Often uses the same App ID but different tokens depending on setup)
-THREADS_ACCESS_TOKEN=your_long_lived_threads_token
+**From the separate Threads App** (Use Case "Access the Threads API"):
+
+```env
+# Threads Settings (from the SEPARATE Threads App)
+THREADS_APP_SECRET=your_threads_app_secret
+THREADS_ACCESS_TOKEN=your_long_lived_threads_token_60_days
 THREADS_USER_ID=your_threads_user_id
 ```
 
 ### Important Notes for Production
 
-*   **Token Expiration**: If you correctly followed the steps to obtain a **Permanent Page Access Token**, it will **never expire**. It works indefinitely unless you change your Facebook password or manually revoke the App's access from your settings.
-*   **App Review**: While you are the only user of the app (Admin role), you do **not** need to submit your app for Meta App Review. You can remain in "Development" mode. It will remain private and 100% functional for your own linked accounts.
+*   **Token Expiration (Facebook/Instagram)**: If you correctly followed the steps to obtain a **Permanent Page Access Token**, it will **never expire**. It works indefinitely unless you change your Facebook password or manually revoke the App's access from your settings.
+*   **Token Expiration (Threads)**: The Threads token lasts **60 days** and must be renewed. You can use the `refresh_access_token` endpoint to extend it by another 60 days. If it expires, you must repeat the OAuth flow. A good approach is to set up a cron job that renews the token every 50 days.
+*   **App Review**: While you are the only user of the apps (Admin/Tester role), **neither** app needs to be submitted for Meta App Review. Both can remain in **"Development"** mode indefinitely. They will remain private and 100% functional for your own linked accounts.

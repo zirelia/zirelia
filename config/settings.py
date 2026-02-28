@@ -97,6 +97,7 @@ class Settings(BaseSettings):
     # Threads (separate app & token from Meta)
     THREADS_ACCESS_TOKEN: Optional[str] = None
     THREADS_USER_ID: Optional[str] = None
+    THREADS_APP_SECRET: Optional[str] = None
     
     # Twitter (X)
     TWITTER_API_KEY: Optional[str] = None
