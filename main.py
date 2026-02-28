@@ -5,6 +5,7 @@
 import argparse
 import sys
 import os
+import random
 from config.settings import get_settings
 from core.utils.logger import logger
 from core.persona.engine import PersonaEngine
@@ -128,9 +129,17 @@ def main():
         for platform in platforms_to_run:
             logger.info(f"\n--- Processing {platform.upper()} ---")
             
+            # Threads text-only ratio: ~70% of Threads posts skip the image
+            platform_image = image_path
+            if platform == "threads" and image_path:
+                text_only_ratio = float(os.getenv("THREADS_TEXT_ONLY_RATIO", "0.7"))
+                if random.random() < text_only_ratio:
+                    logger.info("🧵 Threads: TEXT-ONLY mode (skipping image for this post)")
+                    platform_image = None
+            
             # E. Generate Text (Customized per platform)
             caption_context = f"Topic: {topic}"
-            if args.mode == "text" and platform != "instagram":
+            if (args.mode == "text" or not platform_image) and platform != "instagram":
                 caption_context += " (Note: This is a text-only post, so focus on the copy.)"
                 caption = content_gen.generate_caption(platform, caption_context)
             else:
@@ -148,11 +157,11 @@ def main():
                 manager = PlatformFactory.get_platform(platform, {})
                 if manager:
                     # Platform specific check for missing image
-                    if platform == "instagram" and not image_path:
+                    if platform == "instagram" and not platform_image:
                         logger.error("Instagram requires an image! Skipping.")
                         continue
                         
-                    result = manager.post_content(caption, image_path)
+                    result = manager.post_content(caption, platform_image)
                     logger.info(f"✅ Result: {result}")
                 else:
                     logger.error(f"Platform manager for {platform} not found/implemented.")            

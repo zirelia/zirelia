@@ -82,7 +82,24 @@ NEVER refer to yourself as an AI or an assistant.
         if p_lower == "instagram":
             platform_instructions = "Write a long, descriptive, and emotional caption. Include 15-20 relevant hashtags at the end. Use emojis."
         elif p_lower == "threads":
-            platform_instructions = "Write a very short, engaging thought, ideally formatted as a question to spark conversation. Maximum 1 hashtag or none at all. Casual tone."
+            platform_instructions = (
+                "You are posting on Threads. Your goal is MAXIMUM ENGAGEMENT.\n"
+                "Write something that people MUST reply to. Use one of these formats:\n"
+                "1) A hot take or unpopular opinion\n"
+                "2) A 'this or that' question\n"
+                "3) A relatable rant/complaint\n"
+                "4) A mysterious tease about new IG content\n"
+                "5) A random shower thought\n"
+                "Rules: Under 300 chars. No hashtags. Casual slang. "
+                "End with a hook that demands a reply. Never say 'check out my Instagram'."
+            )
+            # Cross-promo: when Threads has image content, add subtle IG tease
+            if "Image Description" in context:
+                platform_instructions += (
+                    "\nSince this post has a photo, subtly hint that more content "
+                    "is on your Instagram. Never use 'link in bio' or direct URLs. "
+                    "Example: '...the full set? you know where to find it 😏'"
+                )
         elif p_lower == "twitter":
             platform_instructions = "Write a short, punchy, slightly edgy/shitpost style tweet. Maximum 280 characters. 1-2 hashtags max."
         elif p_lower == "facebook":
@@ -150,6 +167,7 @@ NEVER refer to yourself as an AI or an assistant.
                 4. CRITICAL: If holding something (cup, phone), try to describe the hands as resting or out of frame to avoid AI artifacts.
                 5. Output ONLY the visual description. No hashtags, no "Here is the description".
                 6. Length: 1-2 sentences max.
+                7. CONTENT SAFETY: NEVER describe lingerie, underwear, bikinis, or revealing intimate clothing. Keep outfits appropriate: casual wear, athletic wear, streetwear, dresses, or professional attire.
                 """
             )
         ])

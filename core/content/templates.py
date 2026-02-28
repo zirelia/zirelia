@@ -44,7 +44,15 @@ PLATFORM_SPECS = {
         "hashtag_count": "2-3",
     },
     "threads": {
-        "requirements": "Conversational, open-ended. Like a group chat message. Ask opinions.",
+        "requirements": (
+            "Write as if texting your group chat. Pick ONE of these viral formats randomly:\n"
+            "- HOT TAKE: A bold, slightly controversial opinion ('unpopular opinion: ...')\n"
+            "- THIS OR THAT: Give two options and ask which one ('gym at 6am or gym at 11pm?')\n"
+            "- RELATABLE VENT: A funny complaint everyone relates to\n"
+            "- THIRST TRAP TEASE: Hint at IG content without a link ('the full set is... somewhere 😏')\n"
+            "- RANDOM THOUGHT: A late-night or shower thought\n"
+            "Keep it under 300 characters. No hashtags. End with something that begs a reply."
+        ),
         "emoji_count": "1-2",
         "hashtag_count": "0", # Threads usually has no hashtags
     }
