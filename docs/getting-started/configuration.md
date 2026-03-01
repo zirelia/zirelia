@@ -54,7 +54,7 @@ Create a `.env` file in the project root directory by copying `.env.template`.
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `MAX_DAILY_POSTS` | Maximum posts per day (1-3). | `1` |
-| `ACTIVE_PLATFORMS` | Comma-separated list of platforms to post to. | `instagram,facebook` |
+| `ACTIVE_PLATFORMS` | Comma-separated list of platforms to post to. | `instagram,facebook,threads` |
 
 ### Database & Redis (Docker handles these automatically)
 | Variable | Description | Default (Docker) |

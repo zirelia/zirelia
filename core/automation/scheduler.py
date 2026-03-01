@@ -158,7 +158,7 @@ class SmartScheduler:
         logger.info(f"⚡ PREPARING SCHEDULED POST: {post['label']}")
         
         # Read active platforms from env or default to instagram
-        active_platforms_env = os.getenv("ACTIVE_PLATFORMS", "instagram,facebook")
+        active_platforms_env = os.getenv("ACTIVE_PLATFORMS", "instagram,facebook,threads")
         active_platforms = [p.strip() for p in active_platforms_env.split(",") if p.strip()]
 
         for platform in active_platforms:

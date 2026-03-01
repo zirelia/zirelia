@@ -118,6 +118,9 @@ services:
       - THREADS_ACCESS_TOKEN=${THREADS_ACCESS_TOKEN}
       - THREADS_USER_ID=${THREADS_USER_ID}
       - THREADS_APP_SECRET=${THREADS_APP_SECRET}
+      - ACTIVE_PLATFORMS=${ACTIVE_PLATFORMS:-instagram,facebook,threads}
+      - MAX_DAILY_POSTS=${MAX_DAILY_POSTS:-1}
+      - THREADS_TEXT_ONLY_RATIO=${THREADS_TEXT_ONLY_RATIO:-0.7}
     depends_on:
       - db
       - redis

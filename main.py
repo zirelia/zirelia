@@ -118,26 +118,44 @@ def main():
         visual_context = content_gen.generate_visual_prompt(topic)
         logger.info(f"Visual Context: {visual_context}")
 
-        # C. Generate Image - ONCE
-        image_path = None
-        if args.mode == "hybrid" or "instagram" in platforms_to_run:
-            logger.info("Generating Main Image (Shared across platforms)...")
-            image_path = image_gen.generate_image(visual_context, style="lifestyle")
-            logger.info(f"Shared Image URL: {image_path}")
-
-        # D. Iterate through platforms to generate specific copy and post
+        # C. Pre-determine which platforms need an image (BEFORE generating)
+        #    This avoids wasting Replicate credits on images that won't be used.
+        platform_needs_image = {}
         for platform in platforms_to_run:
-            logger.info(f"\n--- Processing {platform.upper()} ---")
-            
-            # Threads text-only ratio: ~70% of Threads posts skip the image
-            platform_image = image_path
-            if platform == "threads" and image_path:
+            if platform == "instagram":
+                # Instagram always requires an image
+                platform_needs_image[platform] = True
+            elif platform == "threads":
+                # Threads text-only ratio: ~70% of Threads posts skip the image
                 text_only_ratio = float(os.getenv("THREADS_TEXT_ONLY_RATIO", "0.7"))
                 if random.random() < text_only_ratio:
                     logger.info("🧵 Threads: TEXT-ONLY mode (skipping image for this post)")
-                    platform_image = None
+                    platform_needs_image[platform] = False
+                else:
+                    logger.info("🧵 Threads: IMAGE mode for this post")
+                    platform_needs_image[platform] = True
+            else:
+                # Facebook, Twitter: use image if mode is hybrid
+                platform_needs_image[platform] = (args.mode == "hybrid")
+
+        any_platform_needs_image = any(platform_needs_image.values())
+
+        # D. Generate Image - ONCE, only if at least one platform needs it
+        image_path = None
+        if any_platform_needs_image:
+            logger.info("Generating Main Image (Shared across platforms)...")
+            image_path = image_gen.generate_image(visual_context, style="lifestyle")
+            logger.info(f"Shared Image URL: {image_path}")
+        else:
+            logger.info("📝 No platform needs an image. Skipping image generation (saving costs).")
+
+        # E. Iterate through platforms to generate specific copy and post
+        for platform in platforms_to_run:
+            logger.info(f"\n--- Processing {platform.upper()} ---")
             
-            # E. Generate Text (Customized per platform)
+            platform_image = image_path if platform_needs_image.get(platform, False) else None
+            
+            # F. Generate Text (Customized per platform)
             caption_context = f"Topic: {topic}"
             if (args.mode == "text" or not platform_image) and platform != "instagram":
                 caption_context += " (Note: This is a text-only post, so focus on the copy.)"
@@ -148,7 +166,7 @@ def main():
             
             logger.info(f"Generated Caption for {platform.upper()}:\n{caption}")
 
-            # F. Publish (or Dry Run)
+            # G. Publish (or Dry Run)
             if args.dry_run:
                 logger.info(f"🚫 DRY RUN: Skipping actual posting to {platform}.")
                 logger.info(f"   [Draft] Text preview: {caption[:70]}...")
