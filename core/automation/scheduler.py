@@ -38,6 +38,7 @@ class SmartScheduler:
     def __init__(self):
         self.schedule = []
         self.today_str = ""
+        self.posts_executed_today = 0
 
     def generate_daily_schedule(self):
         """
@@ -113,7 +114,14 @@ class SmartScheduler:
         while True:
             # New Day Check
             now_aware = datetime.now(TIMEZONE)
-            if self.today_str != now_aware.strftime("%Y-%m-%d") or not self.schedule:
+            current_day = now_aware.strftime("%Y-%m-%d")
+            
+            # New day: reset counter and regenerate schedule
+            if self.today_str != current_day:
+                self.posts_executed_today = 0
+                self.generate_daily_schedule()
+            # Same day but schedule empty: only regenerate if we haven't hit the limit
+            elif not self.schedule and self.posts_executed_today < MAX_DAILY_POSTS:
                 self.generate_daily_schedule()
             
             # Re-fetch now (in case schedule generation took time)
@@ -143,9 +151,12 @@ class SmartScheduler:
                     
                     # EXECUTE POST
                     self._execute_post(next_post)
+                    self.posts_executed_today += 1
                     
                     # Remove from schedule
                     self.schedule.remove(next_post)
+                    
+                    logger.info(f"📊 Posts executed today: {self.posts_executed_today}/{MAX_DAILY_POSTS}")
             else:
                 # No more posts today
                 logger.info("✅ All posts for today completed. Sleeping until tomorrow...")
