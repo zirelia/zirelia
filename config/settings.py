@@ -109,6 +109,11 @@ class Settings(BaseSettings):
     # Image Generation
     REPLICATE_API_TOKEN: Optional[str] = None
     REPLICATE_MODEL_VERSION: str = "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b7159d55fe748cc"
+    # LivePair (livepairai.com) — per-result image generation, no GPU/LoRA ops.
+    # Key from https://livepairai.com/settings
+    LIVEPAIR_API_KEY: Optional[str] = None
+    LIVEPAIR_BASE_URL: str = "https://livepairai.com"
+    LIVEPAIR_MODEL: str = "qwen-image-3"
 
     model_config = SettingsConfigDict(
         env_file=[".env", "virtual_influencer_engine/.env"], 
