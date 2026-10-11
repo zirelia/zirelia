@@ -22,7 +22,12 @@ class ImageGenerator:
             # RECOMMENDED FOR HIGH QUALITY: "lucataco/flux-dev-lora:..." or "ostris/flux-dev-lora-trainer:..."
             self.model = settings.REPLICATE_MODEL_VERSION
         
-        # 2. Fallback to DALL-E 3
+        # 2. LivePair — per-result generation on open-weight models, no GPU ops
+        elif settings.LIVEPAIR_API_KEY:
+            self.provider = "livepair"
+            self.client = None  # plain HTTP, no SDK needed
+
+        # 3. Fallback to DALL-E 3
         elif settings.OPENAI_API_KEY and "dummy" not in settings.OPENAI_API_KEY:
             self.provider = "dall-e-3"
             import httpx
@@ -144,6 +149,45 @@ class ImageGenerator:
                         )
                         image_url = str(output[0]) if isinstance(output, list) else str(output)
             
+                elif self.provider == "livepair":
+                    # LivePair — POST /v1/agent/generate returns a job or a
+                    # direct result; poll until the media URL is ready, then
+                    # hand it to the critic like any other provider.
+                    import requests
+                    full_prompt = f"{prompt}, {style} style, 8k, photorealistic"
+                    base = settings.LIVEPAIR_BASE_URL.rstrip("/")
+                    headers = {"x-api-key": settings.LIVEPAIR_API_KEY}
+
+                    res = requests.post(
+                        f"{base}/v1/agent/generate",
+                        json={
+                            "modelId": settings.LIVEPAIR_MODEL,
+                            "prompt": full_prompt,
+                            "aspectRatio": aspect_ratio,
+                        },
+                        headers=headers,
+                        timeout=60,
+                    )
+                    res.raise_for_status()
+                    data = res.json()
+
+                    image_url = data.get("url")
+                    job_id = data.get("jobId")
+                    # Poll the job until done; media URLs expire after 48h, so
+                    # downstream code must download/persist the asset promptly.
+                    deadline = time.time() + 300
+                    while not image_url and job_id and time.time() < deadline:
+                        job = requests.get(
+                            f"{base}/v1/agent/jobs/{job_id}",
+                            headers=headers,
+                            timeout=30,
+                        ).json()
+                        if job.get("status") == "failed":
+                            raise RuntimeError(f"LivePair job failed: {job.get('error', 'unknown')}")
+                        image_url = job.get("url")
+                        if not image_url:
+                            time.sleep(2)
+
                 elif self.provider == "dall-e-3":
                     # DALL-E 3 Logic
                     full_prompt = f"{style} style. {prompt}. High quality, detailed."
